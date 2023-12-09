@@ -8,10 +8,10 @@ aiohttp==3.9.1
     # via langchain
 aiosignal==1.3.1
     # via aiohttp
-anyio==3.7.1
+anyio==4.1.0
     # via
     #   httpx
-    #   langchain
+    #   langchain-core
     #   starlette
     #   watchfiles
 async-timeout==4.0.3
@@ -65,11 +65,11 @@ frozenlist==1.4.0
     # via
     #   aiohttp
     #   aiosignal
-fsspec==2023.12.0
+fsspec==2023.12.1
     # via
     #   huggingface-hub
     #   torch
-greenlet==3.0.1
+greenlet==3.0.2
     # via sqlalchemy
 h11==0.14.0
     # via
@@ -110,9 +110,9 @@ jsonpatch==1.33
     #   langchain-core
 jsonpointer==2.4
     # via jsonpatch
-langchain==0.0.345
+langchain==0.0.348
     # via medprompt (setup.py)
-langchain-core==0.0.9
+langchain-core==0.0.12
     # via langchain
 langsmith==0.0.69
     # via
@@ -188,10 +188,11 @@ overrides==7.4.0
 packaging==23.2
     # via
     #   huggingface-hub
+    #   langchain-core
     #   marshmallow
     #   onnxruntime
     #   transformers
-pandas==2.1.3
+pandas==2.1.4
     # via chromadb
 pillow==10.1.0
     # via torchvision
@@ -228,6 +229,7 @@ pyyaml==6.0.1
     # via
     #   huggingface-hub
     #   langchain
+    #   langchain-core
     #   transformers
     #   uvicorn
 regex==2023.10.3
@@ -239,6 +241,7 @@ requests==2.31.0
     #   chromadb
     #   huggingface-hub
     #   langchain
+    #   langchain-core
     #   langsmith
     #   posthog
     #   torchvision
@@ -327,7 +330,7 @@ watchfiles==0.21.0
     # via uvicorn
 websockets==12.0
     # via uvicorn
-yarl==1.9.3
+yarl==1.9.4
     # via aiohttp
 zstandard==0.22.0
     # via clickhouse-connect
