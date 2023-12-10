@@ -12,6 +12,9 @@
 
 **MEDPrompt** is a collection of prompts, tools, chains  and agents for medical applications. **MEDPrompt also includes a collection of templates for using FHIR in LLM prompts (see below).** User contributions are highly appreciated!
 
+#### Disclaimer:
+*This repository is not associated with the [Medprompt method of prompting](https://arxiv.org/pdf/2311.16452.pdf). In this generic repository, [I](https://nuchange.ca) will be trying to implement the method using langchain abstractions. Get in touch to share your thoughts via [GitHub discussions](https://github.com/dermatologist/medprompt/discussions). Please submit a PR with a link to the official implementation if any.*
+
 ### FHIR2Text -> Convert FHIR resources to plain text
 This repository includes templates for converting **FHIR resources into a text representation** that can be injected into an LLM prompt. Only relevant information is extracted from the resource with simple transformations using helper functions. 🚒[**See this example usage**](/tests/test_fhir_observation_v1.py).
 
