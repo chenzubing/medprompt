@@ -14,3 +14,4 @@ aioresponses
 langserve
 fastapi
 uvicorn
+pytest-asyncio
