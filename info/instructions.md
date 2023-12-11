@@ -1,6 +1,6 @@
 # Instructions
 
-### Usage
+## Usage
 ```
 from medprompt import MedPrompter
 prompt = MedPrompter()
