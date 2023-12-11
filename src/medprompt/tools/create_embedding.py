@@ -88,6 +88,7 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
         except:
             logging.info("No Data found for patient with id: " + patient_id)
             return chunks
+        logging.info("No of resources found for patient: " + str(len(chunks)))
         try:
             # Store in Redis
             if self. VECTORSTORE_NAME == "redis":
@@ -114,9 +115,12 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
                     collection_name=patient_id
                 )
             else:
+                logging.info("No vector store found for patient with id: " + patient_id)
                 return "No vector store found for patient with id: {}".format(patient_id)
         except Exception as e:
+            logging.info("Unable to create embedding for patient with id: " + patient_id)
             return "Unable to create embedding for patient with id: {}".format(patient_id)
+        logging.info("Embeddings created for patient with id: " + patient_id)
         return "Embeddings created for patient with id: {}".format(patient_id)
     async def _arun(
             self,

@@ -78,6 +78,7 @@ def check_index(input_object):
             vectorstore = Redis.from_existing_index(
                 embedding=embedding, index_name=patient_id, schema=INDEX_SCHEMA, redis_url=REDIS_URL
             )
+            logging.info("Redis embedding found for patient ID {}".format(patient_id))
         except:
             logging.info("Redis embedding not found for patient ID {}. Creating one.".format(patient_id))
             create_embedding_tool = CreateEmbeddingFromFhirBundle()
@@ -88,6 +89,7 @@ def check_index(input_object):
     elif VECTORSTORE_NAME == "chroma":
         try:
             vectorstore = Chroma(collection_name=patient_id, persist_directory=os.getenv("CHROMA_DIR", "/tmp/chroma"), embedding_function=embedding)
+            logging.info("Chroma embedding found for patient ID {}".format(patient_id))
         except:
             logging.info("Chroma embedding not found for patient ID {}. Creating one.".format(patient_id))
             create_embedding_tool = CreateEmbeddingFromFhirBundle()
