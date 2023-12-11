@@ -80,8 +80,8 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
                         "page_content": prompt.generate_prompt(resource).replace("\n", " "),
                         "metadata": {
                             "resourceType": resource["resourceType"],
-                            "resourceID": resource["id"],
-                            "patientID": patient_id
+                            "resourceID": str(resource["id"]),
+                            "patientID": str(patient_id)
                         }
                     }
                     chunks.append(chunk)
