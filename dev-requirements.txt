@@ -35,7 +35,9 @@ attrs==23.1.0
 babel==2.12.1
     # via sphinx
 cachetools==5.3.2
-    # via tox
+    # via
+    #   google-auth
+    #   tox
 certifi==2023.11.17
     # via
     #   -c requirements.txt
@@ -90,10 +92,59 @@ frozenlist==1.4.0
     #   -c requirements.txt
     #   aiohttp
     #   aiosignal
+google-api-core[grpc]==2.15.0
+    # via
+    #   google-api-core
+    #   google-cloud-aiplatform
+    #   google-cloud-bigquery
+    #   google-cloud-core
+    #   google-cloud-resource-manager
+    #   google-cloud-storage
+google-auth==2.25.2
+    # via
+    #   google-api-core
+    #   google-cloud-core
+    #   google-cloud-storage
+google-cloud-aiplatform==1.37.0
+    # via -r dev-requirements.in
+google-cloud-bigquery==3.13.0
+    # via google-cloud-aiplatform
+google-cloud-core==2.4.1
+    # via
+    #   google-cloud-bigquery
+    #   google-cloud-storage
+google-cloud-resource-manager==1.11.0
+    # via google-cloud-aiplatform
+google-cloud-storage==2.13.0
+    # via google-cloud-aiplatform
+google-crc32c==1.5.0
+    # via
+    #   google-cloud-storage
+    #   google-resumable-media
+google-resumable-media==2.6.0
+    # via
+    #   google-cloud-bigquery
+    #   google-cloud-storage
+googleapis-common-protos[grpc]==1.62.0
+    # via
+    #   google-api-core
+    #   grpc-google-iam-v1
+    #   grpcio-status
 greenlet==3.0.2
     # via
     #   -c requirements.txt
     #   sqlalchemy
+grpc-google-iam-v1==0.13.0
+    # via google-cloud-resource-manager
+grpcio==1.60.0
+    # via
+    #   google-api-core
+    #   google-cloud-bigquery
+    #   googleapis-common-protos
+    #   grpc-google-iam-v1
+    #   grpcio-status
+grpcio-status==1.60.0
+    # via google-api-core
 h11==0.14.0
     # via
     #   -c requirements.txt
@@ -180,11 +231,14 @@ numpy==1.26.2
     # via
     #   -c requirements.txt
     #   langchain
+    #   shapely
 orjson==3.9.10
     # via langserve
 packaging==23.2
     # via
     #   -c requirements.txt
+    #   google-cloud-aiplatform
+    #   google-cloud-bigquery
     #   langchain-core
     #   marshmallow
     #   pyproject-api
@@ -200,6 +254,28 @@ pluggy==1.0.0
     # via
     #   pytest
     #   tox
+proto-plus==1.23.0
+    # via
+    #   google-cloud-aiplatform
+    #   google-cloud-bigquery
+    #   google-cloud-resource-manager
+protobuf==4.25.1
+    # via
+    #   -c requirements.txt
+    #   google-api-core
+    #   google-cloud-aiplatform
+    #   google-cloud-bigquery
+    #   google-cloud-resource-manager
+    #   googleapis-common-protos
+    #   grpc-google-iam-v1
+    #   grpcio-status
+    #   proto-plus
+pyasn1==0.5.1
+    # via
+    #   pyasn1-modules
+    #   rsa
+pyasn1-modules==0.3.0
+    # via google-auth
 pydantic==1.10.13
     # via
     #   -c requirements.txt
@@ -221,6 +297,10 @@ pytest-asyncio==0.23.2
     # via -r dev-requirements.in
 pytest-cov==4.0.0
     # via -r dev-requirements.in
+python-dateutil==2.8.2
+    # via
+    #   -c requirements.txt
+    #   google-cloud-bigquery
 pyyaml==6.0.1
     # via
     #   -c requirements.txt
@@ -233,6 +313,9 @@ recommonmark==0.7.1
 requests==2.31.0
     # via
     #   -c requirements.txt
+    #   google-api-core
+    #   google-cloud-bigquery
+    #   google-cloud-storage
     #   langchain
     #   langchain-core
     #   langsmith
@@ -240,8 +323,16 @@ requests==2.31.0
     #   sphinx
 responses==0.24.1
     # via -r dev-requirements.in
+rsa==4.9
+    # via google-auth
 setuptools-scm==7.1.0
     # via -r dev-requirements.in
+shapely==2.0.2
+    # via google-cloud-aiplatform
+six==1.16.0
+    # via
+    #   -c requirements.txt
+    #   python-dateutil
 sniffio==1.3.0
     # via
     #   -c requirements.txt
@@ -288,7 +379,7 @@ tomli==2.0.1
     #   tox
 tox==4.4.12
     # via -r dev-requirements.in
-typing-extensions==4.8.0
+typing-extensions==4.9.0
     # via
     #   -c requirements.txt
     #   pydantic
