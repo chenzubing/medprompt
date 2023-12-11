@@ -1,4 +1,4 @@
-```{include} ../info/index.md
+```{include} ../info/templates.md
 :relative-docs: ../info/
 :relative-images:
 ```

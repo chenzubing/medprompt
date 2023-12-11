@@ -27,8 +27,8 @@ from langchain.schema.output_parser import StrOutputParser
 from langchain.schema.runnable import RunnableMap, RunnablePassthrough
 from langchain.tools import tool
 from langchain.vectorstores import Chroma, Redis
-from langserve.pydantic_v1 import BaseModel
-from pydantic import Field
+from pydantic import BaseModel, Field
+
 
 from .. import MedPrompter
 from ..tools import CreateEmbeddingFromFhirBundle
