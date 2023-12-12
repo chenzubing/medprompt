@@ -1,0 +1,24 @@
+{
+    "resourceType": "Observation",
+    "status": "final",
+    "code": {
+        "coding": [
+            {
+                "system": "http://loinc.org",
+                "code": "15074-8",
+                "display": "Glucose [Moles/volume] in Blood"
+            }
+        ]
+    },
+    "subject": {
+        "reference": "Patient/41399401"
+    },
+    "valueQuantity": {
+        "value": 6.3,
+        "unit": "mmol/l",
+        "system": "http://unitsofmeasure.org",
+        "code": "mmol/L"
+    }
+}
+
+
