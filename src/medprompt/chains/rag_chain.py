@@ -97,8 +97,7 @@ def check_index(input_object):
             _ = create_embedding_tool.run(patient_id)
             vectorstore = Chroma(collection_name=patient_id, persist_directory=os.getenv("CHROMA_DIR", "/tmp/chroma"), embedding_function=embedding)
     else:
-        logging.info("No vectorstore found.")
-        return None
+        raise Exception("No vectorstore found.")
     return vectorstore.as_retriever().get_relevant_documents(input_object["input"], k=10)
 
 

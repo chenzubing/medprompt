@@ -1,6 +1,9 @@
 text:
 - name: content
 - name: source
+- name: resourceType
+- name: resourceID
+- name: patientID
 numeric:
 - name: start_index
 vector:
