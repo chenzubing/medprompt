@@ -1,22 +1,34 @@
 # import pytest
-# from src.medprompt.chains.rag_chain import get_rag_chain, check_index
+# from src.medprompt.chains.rag_chain import check_index, get_rag_tool
 
 # def test_check_index():
 #     # Test with valid patient_id
-#     patient_id = "45657"
-#     result = check_index(patient_id)
-#     # docs = result.get_relevant_documents("Body Weight")
-#     # print(docs)
-#     # assert len(docs) > 0
+#     input_object = {
+#         "patient_id": "41399401",
+#         "input": "What is the erythrocyte count?",
+#         "chat_history": [""]
+#     }
+#     result = check_index(input_object)
+#     print(result)
 #     assert result is not None
 
 
-# def test_get_rag_chain():
+# def test_get_rag_chain_not_mentioned():
 #     input = {
-#         "patient_id": "45657",
-#         "question": "What is the patient's weight?",
+#         "patient_id": "41399401",
+#         "input": "What is the patient's weight?",
 #         "chat_history": [""]
 #     }
-#     chain = get_rag_chain(input)
-#     print(chain.run())
-#     assert chain is not None
+#     output = get_rag_tool(input)
+#     print(output)
+#     assert "not mentioned" in output
+
+# def test_get_rag_chain_not_mentioned():
+#     input = {
+#         "patient_id": "41399401",
+#         "input": "What is the erythrocyte count of this patient?",
+#         "chat_history": [""]
+#     }
+#     output = get_rag_tool(input)
+#     print(output)
+#     assert "4.12" in output
