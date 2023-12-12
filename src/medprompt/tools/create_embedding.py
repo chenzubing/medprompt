@@ -88,7 +88,7 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
         logging.info("No of resources found for patient: " + str(len(chunks)))
         try:
             # Store in Redis
-            if self. VECTORSTORE_NAME == "redis":
+            if self.VECTORSTORE_NAME == "redis":
                 db = Redis.from_texts(
                     # appending this little bit can sometimes help with semantic retrieval
                     # especially with multiple companies

@@ -6,7 +6,7 @@ import json
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
 
-
+@pytest.mark.order(1)
 def test_create_embedding_from_fhir_bundle(patient_id):
     # Initialize the class
     create_embedding = CreateEmbeddingFromFhirBundle()
@@ -17,7 +17,7 @@ def test_create_embedding_from_fhir_bundle(patient_id):
     assert result is not None
 
 
-@pytest.mark.last
+@pytest.mark.order(2)
 def test_created_embedding(patient_id):
     EMBED_MODEL = os.getenv("EMBED_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
     embedding = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
