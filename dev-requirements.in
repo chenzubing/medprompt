@@ -16,3 +16,4 @@ fastapi
 uvicorn
 pytest-asyncio
 google-cloud-aiplatform
+pytest-ordering
