@@ -49,7 +49,8 @@ Give clinical interpretations based only on the facts in the context.
 Mention the time period whenever possible.
 Do not make up any information that is not in the context.
 Answer the clinical question based ONLY on the following context:
-If the context below is empty, the patient has no additional medical history.
+If the context below is empty, say so and do not answer the question.
+
 Context: {context}
 
 Question: {input}
