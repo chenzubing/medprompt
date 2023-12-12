@@ -15,6 +15,7 @@
 """
 
 import os
+from os.path import dirname, abspath
 import logging
 from typing import Any, Optional, Type
 from langchain.callbacks.manager import (AsyncCallbackManagerForToolRun,
@@ -50,10 +51,7 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
     embedder = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
 
     # Index schema
-    current_file_path = os.path.abspath(__file__)
-    parent_dir = os.path.dirname(current_file_path)
-    schema_path = os.path.join(parent_dir, "schema.yml")
-    INDEX_SCHEMA = schema_path
+    INDEX_SCHEMA = os.path.join(dirname(dirname(abspath(__file__))), "schema.yml")
     VECTORSTORE_NAME = os.getenv("VECTORSTORE_NAME", "chroma")
 
     def _run(
