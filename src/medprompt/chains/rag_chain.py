@@ -15,7 +15,6 @@
 """
 
 
-import logging
 import os
 from typing import List
 from langchain.embeddings import HuggingFaceEmbeddings
@@ -76,29 +75,18 @@ clinical_llm = loads(_llm_str)
 def check_index(input_object):
     patient_id = input_object["patient_id"]
     if VECTORSTORE_NAME == "redis":
-        try:
-            vectorstore = Redis.from_existing_index(
-                embedding=embedding, index_name=patient_id, schema=INDEX_SCHEMA, redis_url=REDIS_URL
-            )
-            logging.info("Redis embedding found for patient ID {}".format(patient_id))
-        except:
-            logging.info("Redis embedding not found for patient ID {}. Creating one.".format(patient_id))
-            create_embedding_tool = CreateEmbeddingFromFhirBundle()
-            _ = create_embedding_tool.run(patient_id)
-            vectorstore = Redis.from_existing_index(
-                embedding=embedding, index_name=patient_id, schema=INDEX_SCHEMA, redis_url=REDIS_URL
-            )
+        create_embedding_tool = CreateEmbeddingFromFhirBundle()
+        _ = create_embedding_tool.run(patient_id)
+        vectorstore = Redis.from_existing_index(
+            embedding=embedding, index_name=patient_id, schema=INDEX_SCHEMA, redis_url=REDIS_URL
+        )
     elif VECTORSTORE_NAME == "chroma":
-        try:
-            vectorstore = Chroma(collection_name=patient_id, persist_directory=os.getenv("CHROMA_DIR", "/tmp/chroma"), embedding_function=embedding)
-            logging.info("Chroma embedding found for patient ID {}".format(patient_id))
-        except:
-            logging.info("Chroma embedding not found for patient ID {}. Creating one.".format(patient_id))
-            create_embedding_tool = CreateEmbeddingFromFhirBundle()
-            _ = create_embedding_tool.run(patient_id)
-            vectorstore = Chroma(collection_name=patient_id, persist_directory=os.getenv("CHROMA_DIR", "/tmp/chroma"), embedding_function=embedding)
+        create_embedding_tool = CreateEmbeddingFromFhirBundle()
+        _ = create_embedding_tool.run(patient_id)
+        vectorstore = Chroma(collection_name=patient_id, persist_directory=os.getenv("CHROMA_DIR", "/tmp/chroma"), embedding_function=embedding)
     else:
-        raise Exception("No vectorstore found.")
+        raise Exception("No vectorstore")
+    vectorstore.persist()
     return vectorstore.as_retriever().get_relevant_documents(input_object["input"], k=10)
 
 
@@ -107,7 +95,10 @@ def _combine_documents(
 ):
     """Combine documents into a single string."""
     doc_strings = [format_document(doc, document_prompt) for doc in docs]
-    return document_separator.join(doc_strings)
+    _reply = document_separator.join(doc_strings)
+    if len(_reply.strip()) < 3:
+        _reply = "No information found. The vectorstore may still be indexing. Please try again later."
+    return _reply
 
 
 def _format_chat_history(chat_history: List[str]) -> str:
