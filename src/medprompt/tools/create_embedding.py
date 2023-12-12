@@ -51,7 +51,7 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
     embedder = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
 
     # Index schema
-    INDEX_SCHEMA = os.path.join(dirname(dirname(abspath(__file__))), "schema.yml")
+    INDEX_SCHEMA = os.getenv("INDEX_SCHEMA", "/tmp/redis_schema.yaml")
     VECTORSTORE_NAME = os.getenv("VECTORSTORE_NAME", "chroma")
 
     def _run(
@@ -98,9 +98,10 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
                     metadatas=[chunk["metadata"] for chunk in chunks],
                     embedding=self.embedder,
                     index_name=patient_id,
-                    index_schema=self.INDEX_SCHEMA,
+                    # index_schema=self.INDEX_SCHEMA,
                     redis_url=os.getenv("REDIS_URL", "redis://localhost:6379")
                 )
+                db.write_schema(self.INDEX_SCHEMA)
 
             # Store in Chroma
             elif self.VECTORSTORE_NAME == "chroma":

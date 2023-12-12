@@ -59,7 +59,7 @@ Question: {input}
 ANSWER_PROMPT = ChatPromptTemplate.from_template(ANSWER_TEMPLATE)
 DEFAULT_DOCUMENT_PROMPT = PromptTemplate.from_template(template="{page_content}")
 EMBED_MODEL = os.getenv("EMBED_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
-INDEX_SCHEMA = os.path.join(dirname(dirname(abspath(__file__))), "schema.yml")
+INDEX_SCHEMA = os.getenv("INDEX_SCHEMA", "/tmp/redis_schema.yaml")
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
 embedding = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
 VECTORSTORE_NAME = os.getenv("VECTORSTORE_NAME", "chroma")
