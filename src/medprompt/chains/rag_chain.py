@@ -76,7 +76,7 @@ def check_index(input_object):
     if VECTORSTORE_NAME == "redis":
         try:
             vectorstore = Redis.from_existing_index(
-                embedding=embedding, index_name=patient_id, redis_url=REDIS_URL
+                embedding=embedding, index_name=patient_id, schema=INDEX_SCHEMA, redis_url=REDIS_URL
             )
             logging.info("Redis embedding found for patient ID {}".format(patient_id))
         except:
@@ -84,7 +84,7 @@ def check_index(input_object):
             create_embedding_tool = CreateEmbeddingFromFhirBundle()
             _ = create_embedding_tool.run(patient_id)
             vectorstore = Redis.from_existing_index(
-                embedding=embedding, index_name=patient_id, redis_url=REDIS_URL
+                embedding=embedding, index_name=patient_id, schema=INDEX_SCHEMA, redis_url=REDIS_URL
             )
     elif VECTORSTORE_NAME == "chroma":
         try:

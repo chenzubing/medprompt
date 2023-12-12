@@ -100,7 +100,7 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
                     metadatas=[chunk["metadata"] for chunk in chunks],
                     embedding=self.embedder,
                     index_name=patient_id,
-                    #index_schema=self.INDEX_SCHEMA,
+                    index_schema=self.INDEX_SCHEMA,
                     redis_url=os.getenv("REDIS_URL", "redis://localhost:6379")
                 )
 
