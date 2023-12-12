@@ -18,7 +18,7 @@ def f():
     _m = MedPrompter()
     return _m
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def patient_id():
     url = os.environ.get("FHIR_SERVER_URL", 'http://hapi.fhir.org/baseR4')
     _patient = requests.get(url + "/Patient?_pretty=true")
