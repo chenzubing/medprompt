@@ -27,8 +27,8 @@ from langchain.schema.output_parser import StrOutputParser
 from langchain.schema.runnable import RunnableMap, RunnablePassthrough
 from langchain.tools import tool
 from langchain.vectorstores import Chroma, Redis
-from langserve.pydantic_v1 import BaseModel
-from pydantic import Field
+from pydantic import BaseModel, Field
+
 
 from .. import MedPrompter
 from ..tools import CreateEmbeddingFromFhirBundle
@@ -48,7 +48,9 @@ Give clinical interpretations based only on the facts in the context.
 Mention the time period whenever possible.
 Do not make up any information that is not in the context.
 Answer the clinical question based ONLY on the following context:
-{context}
+If the context below is empty, say so and do not answer the question.
+
+Context: {context}
 
 Question: {input}
 
@@ -56,7 +58,7 @@ Question: {input}
 ANSWER_PROMPT = ChatPromptTemplate.from_template(ANSWER_TEMPLATE)
 DEFAULT_DOCUMENT_PROMPT = PromptTemplate.from_template(template="{page_content}")
 EMBED_MODEL = os.getenv("EMBED_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
-INDEX_SCHEMA = os.path.join(os.path.dirname(__file__), "schema.yml")
+INDEX_SCHEMA = os.getenv("INDEX_SCHEMA", "/tmp/redis_schema.yaml")
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
 embedding = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
 VECTORSTORE_NAME = os.getenv("VECTORSTORE_NAME", "chroma")
@@ -78,6 +80,7 @@ def check_index(input_object):
             vectorstore = Redis.from_existing_index(
                 embedding=embedding, index_name=patient_id, schema=INDEX_SCHEMA, redis_url=REDIS_URL
             )
+            logging.info("Redis embedding found for patient ID {}".format(patient_id))
         except:
             logging.info("Redis embedding not found for patient ID {}. Creating one.".format(patient_id))
             create_embedding_tool = CreateEmbeddingFromFhirBundle()
@@ -88,14 +91,14 @@ def check_index(input_object):
     elif VECTORSTORE_NAME == "chroma":
         try:
             vectorstore = Chroma(collection_name=patient_id, persist_directory=os.getenv("CHROMA_DIR", "/tmp/chroma"), embedding_function=embedding)
+            logging.info("Chroma embedding found for patient ID {}".format(patient_id))
         except:
             logging.info("Chroma embedding not found for patient ID {}. Creating one.".format(patient_id))
             create_embedding_tool = CreateEmbeddingFromFhirBundle()
             _ = create_embedding_tool.run(patient_id)
             vectorstore = Chroma(collection_name=patient_id, persist_directory=os.getenv("CHROMA_DIR", "/tmp/chroma"), embedding_function=embedding)
     else:
-        logging.info("No vectorstore found.")
-        return None
+        raise Exception("No vectorstore found.")
     return vectorstore.as_retriever().get_relevant_documents(input_object["input"], k=10)
 
 
@@ -140,7 +143,7 @@ def get_runnable(**kwargs):
         context=context,
         input=input,
     )
-    _chain = _inputs | ANSWER_PROMPT | clinical_llm | StrOutputParser()
+    _chain = _inputs | ANSWER_PROMPT | main_llm | StrOutputParser()
     chain = _chain.with_types(input_type=ChatHistory)
     return chain
 

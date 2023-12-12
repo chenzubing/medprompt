@@ -23,7 +23,7 @@ from langchain.callbacks.manager import (AsyncCallbackManagerForToolRun,
                                          CallbackManagerForToolRun)
 from langchain.tools import BaseTool, StructuredTool, Tool, tool
 from langchain.pydantic_v1 import BaseModel, Field
-
+import logging
 
 class SearchInput(BaseModel):
     patient_id: str = Field()
@@ -51,10 +51,13 @@ class GetMedicalRecordTool(StructuredTool):
             response.raise_for_status()
             _response = json.loads(response.text)
         except:
+            logging.error("FHIR server not responding")
             return "Sorry I cannot find the answer as the FHIR server is not responding."
         if _response["total"] >100:
+            logging.info("Patient record too large")
             return "Sorry, the patient's record is too large to be loaded."
         elif _response["total"] < 1:
+            logging.info("Patient record not found")
             return "This patient does not have a record."
         else:
             return _response
@@ -74,10 +77,13 @@ class GetMedicalRecordTool(StructuredTool):
             response.raise_for_status()
             _response = json.loads(response.text)
         except:
+            logging.error("FHIR server not responding")
             return "Sorry I cannot find the answer as the FHIR server is not responding."
         if _response["total"] >100:
+            logging.info("Patient record too large")
             return "Sorry, the patient's record is too large to be loaded."
         elif _response["total"] < 1:
+            logging.info("Patient record not found")
             return "This patient does not have a record."
         else:
             return _response

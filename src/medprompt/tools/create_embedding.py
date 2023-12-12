@@ -50,10 +50,7 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
     embedder = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
 
     # Index schema
-    current_file_path = os.path.abspath(__file__)
-    parent_dir = os.path.dirname(current_file_path)
-    schema_path = os.path.join(parent_dir, "schema.yml")
-    INDEX_SCHEMA = schema_path
+    INDEX_SCHEMA = os.getenv("INDEX_SCHEMA", "/tmp/redis_schema.yaml")
     VECTORSTORE_NAME = os.getenv("VECTORSTORE_NAME", "chroma")
 
     def _run(
@@ -80,14 +77,15 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
                         "page_content": prompt.generate_prompt(resource).replace("\n", " "),
                         "metadata": {
                             "resourceType": resource["resourceType"],
-                            "resourceID": resource["id"],
-                            "patientID": patient_id
+                            "resourceID": str(resource["id"]),
+                            "patientID": str(patient_id)
                         }
                     }
                     chunks.append(chunk)
         except:
             logging.info("No Data found for patient with id: " + patient_id)
             return chunks
+        logging.info("No of resources found for patient: " + str(len(chunks)))
         try:
             # Store in Redis
             if self. VECTORSTORE_NAME == "redis":
@@ -99,9 +97,10 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
                     metadatas=[chunk["metadata"] for chunk in chunks],
                     embedding=self.embedder,
                     index_name=patient_id,
-                    index_schema=self.INDEX_SCHEMA,
+                    # index_schema=self.INDEX_SCHEMA,
                     redis_url=os.getenv("REDIS_URL", "redis://localhost:6379")
                 )
+                db.write_schema(self.INDEX_SCHEMA)
 
             # Store in Chroma
             elif self.VECTORSTORE_NAME == "chroma":
@@ -114,14 +113,19 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
                     collection_name=patient_id
                 )
             else:
-                return "No vector store found for patient with id: {}".format(patient_id)
+                logging.info("No vector store found for patient with id: " + patient_id)
+                # return "No vector store found for patient with id: {}".format(patient_id)
+                raise Exception("No vector store found for patient with id: {}".format(patient_id))
         except Exception as e:
-            return "Unable to create embedding for patient with id: {}".format(patient_id)
+            logging.info("Unable to create embedding for patient with id: " + patient_id)
+            # return "Unable to create embedding for patient with id: {}".format(patient_id)
+            raise Exception("Unable to create embedding for patient with id: {}".format(patient_id))
+        logging.info("Embeddings created for patient with id: " + patient_id)
         return "Embeddings created for patient with id: {}".format(patient_id)
     async def _arun(
             self,
             patient_id: str = None,
             run_manager: Optional[AsyncCallbackManagerForToolRun] = None
             ) -> Any:
-        #raise NotImplementedError("Async not implemented yet")
-        return self._run(patient_id, run_manager)
+        raise NotImplementedError("Async not implemented yet")
+        # return self._run(patient_id, run_manager)
