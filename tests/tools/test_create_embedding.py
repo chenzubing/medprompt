@@ -16,10 +16,8 @@ def test_create_embedding_from_fhir_bundle(patient_id):
     print(result)
     assert result is not None
 
-    # Test the _arun method
-    result = create_embedding._arun(patient_id=patient_id)
-    assert result is not None
 
+@pytest.mark.last
 def test_created_embedding(patient_id):
     EMBED_MODEL = os.getenv("EMBED_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
     embedding = HuggingFaceEmbeddings(model_name=EMBED_MODEL)

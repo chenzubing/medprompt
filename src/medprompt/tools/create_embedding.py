@@ -127,5 +127,5 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
             patient_id: str = None,
             run_manager: Optional[AsyncCallbackManagerForToolRun] = None
             ) -> Any:
-        #raise NotImplementedError("Async not implemented yet")
-        return self._run(patient_id, run_manager)
+        raise NotImplementedError("Async not implemented yet")
+        # return self._run(patient_id, run_manager)
