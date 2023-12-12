@@ -142,7 +142,7 @@ def get_runnable(**kwargs):
         context=context,
         input=input,
     )
-    _chain = _inputs | ANSWER_PROMPT | clinical_llm | StrOutputParser()
+    _chain = _inputs | ANSWER_PROMPT | main_llm | StrOutputParser()
     chain = _chain.with_types(input_type=ChatHistory)
     return chain
 
