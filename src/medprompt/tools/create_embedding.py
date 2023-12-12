@@ -15,7 +15,6 @@
 """
 
 import os
-from os.path import dirname, abspath
 import logging
 from typing import Any, Optional, Type
 from langchain.callbacks.manager import (AsyncCallbackManagerForToolRun,

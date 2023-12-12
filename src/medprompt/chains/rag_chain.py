@@ -17,7 +17,6 @@
 
 import logging
 import os
-from os.path import dirname, abspath
 from typing import List
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.load import loads
