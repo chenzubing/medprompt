@@ -33,9 +33,9 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
     """
     Creates an embedding for a patient with id.
     """
-    name = "create_embedding_from_fhir_bundle"
+    name = "create index for medical record"
     description = """
-    Creates an embedding for a patient from patient_id.
+    Creates a medical record index for a patient with patient_id.
     """
     args_schema: Type[BaseModel] = SearchInput
 
