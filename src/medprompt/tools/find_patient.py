@@ -22,6 +22,7 @@ from langchain.callbacks.manager import (AsyncCallbackManagerForToolRun,
                                          CallbackManagerForToolRun)
 from langchain.tools import BaseTool, StructuredTool, Tool, tool
 from langchain.pydantic_v1 import BaseModel, Field
+from .create_embedding import CreateEmbeddingFromFhirBundle
 
 class SearchInput(BaseModel):
     given: Optional[str] = Field()
@@ -52,6 +53,7 @@ class FhirPatientSearchTool(StructuredTool):
             patient_id: str = None,
             run_manager: Optional[CallbackManagerForToolRun] = None
             ) -> Any:
+        _ = CreateEmbeddingFromFhirBundle().run(patient_id)
         url = os.environ.get("FHIR_SERVER_URL", 'http://hapi.fhir.org/baseR4')
         if not url:
             raise ValueError("FHIR_SERVER_URL environment variable not set")
@@ -76,6 +78,7 @@ class FhirPatientSearchTool(StructuredTool):
             patient_id: str = None,
             run_manager: Optional[AsyncCallbackManagerForToolRun] = None
             ) -> Any:
+        _ = await CreateEmbeddingFromFhirBundle().arun(patient_id)
         url = os.environ.get("FHIR_SERVER_URL", 'http://hapi.fhir.org/baseR4')
         if not url:
             raise ValueError("FHIR_SERVER_URL environment variable not set")
