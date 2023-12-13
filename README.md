@@ -44,15 +44,22 @@ Documentation is in progress. Any help will be highly appreciated.
 More documentation and examples to follow..
 
 ### Install
+* *medprompt* for the core package
+* *embedding* for using RAG with HuggingFace transformers
 
 ```
 pip install medprompt
+pip install medprompt[embedding]
 ```
 
 ### Install Develop branch
 
 ```
 pip install git+https://github.com/dermatologist/medprompt.git
+
+OR
+after cloning the repository
+pip install -e .[embedding]
 ```
 
 ### Import
