@@ -17,6 +17,7 @@
 
 import logging
 import os
+import time
 from typing import List
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.load import loads
@@ -26,9 +27,9 @@ from langchain.schema import format_document
 from langchain.schema.output_parser import StrOutputParser
 from langchain.schema.runnable import RunnableMap, RunnablePassthrough
 from langchain.tools import tool
-from langchain.vectorstores import Chroma, Redis
-from langserve.pydantic_v1 import BaseModel
-from pydantic import Field
+from langchain.vectorstores import Chroma, Redis, FAISS
+from pydantic import BaseModel, Field
+
 
 from .. import MedPrompter
 from ..tools import CreateEmbeddingFromFhirBundle
@@ -43,23 +44,22 @@ Follow Up Question: {input}
 Standalone question:"""
 CONDENSE_QUESTION_PROMPT = PromptTemplate.from_template(_TEMPLATE)
 
-ANSWER_TEMPLATE = """
-Give clinical interpretations based only on the facts in the context.
-Mention the time period whenever possible.
-Do not make up any information that is not in the context.
-Answer the clinical question based ONLY on the following context:
+ANSWER_TEMPLATE = """Answer the following question based only on the available context below.
+
+Context:
 {context}
 
-Question: {input}
+Question:
+{input}
 
 """
 ANSWER_PROMPT = ChatPromptTemplate.from_template(ANSWER_TEMPLATE)
 DEFAULT_DOCUMENT_PROMPT = PromptTemplate.from_template(template="{page_content}")
 EMBED_MODEL = os.getenv("EMBED_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
-INDEX_SCHEMA = os.path.join(os.path.dirname(__file__), "schema.yml")
+INDEX_SCHEMA = os.getenv("INDEX_SCHEMA", "/tmp/redis_schema.yaml")
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
 embedding = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
-VECTORSTORE_NAME = os.getenv("VECTORSTORE_NAME", "chroma")
+VECTORSTORE_NAME = os.getenv("VECTORSTORE_NAME", "faiss")
 
 # Load LLMs
 _main_llm = os.getenv("MAIN_LLM", "text_bison_001_model_v1.txt")
@@ -74,28 +74,23 @@ clinical_llm = loads(_llm_str)
 def check_index(input_object):
     patient_id = input_object["patient_id"]
     if VECTORSTORE_NAME == "redis":
-        try:
-            vectorstore = Redis.from_existing_index(
-                embedding=embedding, index_name=patient_id, schema=INDEX_SCHEMA, redis_url=REDIS_URL
-            )
-        except:
-            logging.info("Redis embedding not found for patient ID {}. Creating one.".format(patient_id))
-            create_embedding_tool = CreateEmbeddingFromFhirBundle()
-            _ = create_embedding_tool.run(patient_id)
-            vectorstore = Redis.from_existing_index(
-                embedding=embedding, index_name=patient_id, schema=INDEX_SCHEMA, redis_url=REDIS_URL
-            )
+        create_embedding_tool = CreateEmbeddingFromFhirBundle()
+        _ = create_embedding_tool.run(patient_id)
+        vectorstore = Redis.from_existing_index(
+            embedding=embedding, index_name=patient_id, schema=INDEX_SCHEMA, redis_url=REDIS_URL
+        )
     elif VECTORSTORE_NAME == "chroma":
-        try:
-            vectorstore = Chroma(collection_name=patient_id, persist_directory=os.getenv("CHROMA_DIR", "/tmp/chroma"), embedding_function=embedding)
-        except:
-            logging.info("Chroma embedding not found for patient ID {}. Creating one.".format(patient_id))
-            create_embedding_tool = CreateEmbeddingFromFhirBundle()
-            _ = create_embedding_tool.run(patient_id)
-            vectorstore = Chroma(collection_name=patient_id, persist_directory=os.getenv("CHROMA_DIR", "/tmp/chroma"), embedding_function=embedding)
+        create_embedding_tool = CreateEmbeddingFromFhirBundle()
+        _ = create_embedding_tool.run(patient_id)
+        vectorstore = Chroma(collection_name=patient_id, persist_directory=os.getenv("CHROMA_DIR", "/tmp/chroma"), embedding_function=embedding)
+        vectorstore.persist()
+    elif VECTORSTORE_NAME == "faiss":
+        create_embedding_tool = CreateEmbeddingFromFhirBundle()
+        _ = create_embedding_tool.run(patient_id)
+        fname = os.getenv("FAISS_DIR", "/tmp/faiss") + "/" + patient_id + ".index"
+        vectorstore = FAISS.load_local(fname, embeddings=embedding)
     else:
-        logging.info("No vectorstore found.")
-        return None
+        raise Exception("No vectorstore")
     return vectorstore.as_retriever().get_relevant_documents(input_object["input"], k=10)
 
 
@@ -104,7 +99,10 @@ def _combine_documents(
 ):
     """Combine documents into a single string."""
     doc_strings = [format_document(doc, document_prompt) for doc in docs]
-    return document_separator.join(doc_strings)
+    _reply = document_separator.join(doc_strings)
+    if len(_reply.strip()) < 3:
+        _reply = "No information found. The vectorstore may still be indexing. Please try again later."
+    return _reply
 
 
 def _format_chat_history(chat_history: List[str]) -> str:
@@ -122,7 +120,7 @@ class ChatHistory(BaseModel):
 
     chat_history: List[str] = Field(default=[])
     input: str = Field(default="Give a summary.")
-    patient_id: str = Field(default="123unknown")
+    patient_id: str = Field(default="123456")
 
 def get_runnable(**kwargs):
     """Get the runnable chain."""
@@ -140,7 +138,7 @@ def get_runnable(**kwargs):
         context=context,
         input=input,
     )
-    _chain = _inputs | ANSWER_PROMPT | clinical_llm | StrOutputParser()
+    _chain = _inputs | ANSWER_PROMPT | main_llm | StrOutputParser()
     chain = _chain.with_types(input_type=ChatHistory)
     return chain
 

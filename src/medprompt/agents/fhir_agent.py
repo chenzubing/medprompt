@@ -3,7 +3,7 @@ from langchain.agents import initialize_agent, AgentType
 from langchain.load import loads
 from pydantic import BaseModel, Field
 from ..chains import get_rag_tool
-from ..tools import FhirPatientSearchTool, ConvertFhirToTextTool
+from ..tools import FhirPatientSearchTool, ConvertFhirToTextTool, CreateEmbeddingFromFhirBundle
 from .. import MedPrompter
 
 class SearchInput(BaseModel):
@@ -27,7 +27,7 @@ class FhirAgent:
         self.prefix = self.med_prompter.generate_prompt()
         self.med_prompter.set_template(template_path=template_path, template_name=suffix)
         self.suffix = self.med_prompter.generate_prompt()
-        self.tools = [FhirPatientSearchTool(), ConvertFhirToTextTool(), get_rag_tool]
+        self.tools = [FhirPatientSearchTool(), CreateEmbeddingFromFhirBundle(), ConvertFhirToTextTool(), get_rag_tool]
         self.agent_kwargs = {
             "prefix": self.prefix,
             "suffix": self.suffix,

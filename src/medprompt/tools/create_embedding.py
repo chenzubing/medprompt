@@ -21,7 +21,7 @@ from langchain.callbacks.manager import (AsyncCallbackManagerForToolRun,
                                          CallbackManagerForToolRun)
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.tools import BaseTool
-from langchain.vectorstores import Redis, Chroma
+from langchain.vectorstores import Redis, Chroma, FAISS
 from langchain.pydantic_v1 import BaseModel, Field
 from .. import MedPrompter, get_time_diff_from_today
 from .get_medical_record import GetMedicalRecordTool
@@ -33,9 +33,9 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
     """
     Creates an embedding for a patient with id.
     """
-    name = "create_embedding_from_fhir_bundle"
+    name = "create index for medical record"
     description = """
-    Creates an embedding for a patient from patient_id.
+    Creates a medical record index for a patient with patient_id.
     """
     args_schema: Type[BaseModel] = SearchInput
 
@@ -50,11 +50,8 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
     embedder = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
 
     # Index schema
-    current_file_path = os.path.abspath(__file__)
-    parent_dir = os.path.dirname(current_file_path)
-    schema_path = os.path.join(parent_dir, "schema.yml")
-    INDEX_SCHEMA = schema_path
-    VECTORSTORE_NAME = os.getenv("VECTORSTORE_NAME", "chroma")
+    INDEX_SCHEMA = os.getenv("INDEX_SCHEMA", "/tmp/redis_schema.yaml")
+    VECTORSTORE_NAME = os.getenv("VECTORSTORE_NAME", "faiss")
 
     def _run(
             self,
@@ -80,17 +77,18 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
                         "page_content": prompt.generate_prompt(resource).replace("\n", " "),
                         "metadata": {
                             "resourceType": resource["resourceType"],
-                            "resourceID": resource["id"],
-                            "patientID": patient_id
+                            "resourceID": str(resource["id"]),
+                            "patientID": str(patient_id)
                         }
                     }
                     chunks.append(chunk)
         except:
             logging.info("No Data found for patient with id: " + patient_id)
             return chunks
+        logging.info("No of resources found for patient: " + str(len(chunks)))
         try:
             # Store in Redis
-            if self. VECTORSTORE_NAME == "redis":
+            if self.VECTORSTORE_NAME == "redis":
                 db = Redis.from_texts(
                     # appending this little bit can sometimes help with semantic retrieval
                     # especially with multiple companies
@@ -99,9 +97,10 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
                     metadatas=[chunk["metadata"] for chunk in chunks],
                     embedding=self.embedder,
                     index_name=patient_id,
-                    index_schema=self.INDEX_SCHEMA,
+                    # index_schema=self.INDEX_SCHEMA,
                     redis_url=os.getenv("REDIS_URL", "redis://localhost:6379")
                 )
+                db.write_schema(self.INDEX_SCHEMA)
 
             # Store in Chroma
             elif self.VECTORSTORE_NAME == "chroma":
@@ -113,15 +112,31 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
                     ids=[chunk["metadata"]["resourceID"] for chunk in chunks],
                     collection_name=patient_id
                 )
+
+            # Store in FAISS
+            elif self.VECTORSTORE_NAME == "faiss":
+                fname = os.getenv("FAISS_DIR", "/tmp/faiss") + "/" + patient_id + ".index"
+                if not os.path.exists(fname):
+                    db = FAISS.from_texts(
+                        texts=[chunk["page_content"] for chunk in chunks],
+                        metadatas=[chunk["metadata"] for chunk in chunks],
+                        embedding=self.embedder,
+                    )
+                    db.save_local(fname)
             else:
-                return "No vector store found for patient with id: {}".format(patient_id)
+                logging.info("No vector store found for patient with id: " + patient_id)
+                # return "No vector store found for patient with id: {}".format(patient_id)
+                raise Exception("No vector store found for patient with id: {}".format(patient_id))
         except Exception as e:
-            return "Unable to create embedding for patient with id: {}".format(patient_id)
+            logging.info("Unable to create embedding for patient with id: " + patient_id)
+            # return "Unable to create embedding for patient with id: {}".format(patient_id)
+            raise Exception("Unable to create embedding for patient with id: {}".format(patient_id))
+        logging.info("Embeddings created for patient with id: " + patient_id)
         return "Embeddings created for patient with id: {}".format(patient_id)
     async def _arun(
             self,
             patient_id: str = None,
             run_manager: Optional[AsyncCallbackManagerForToolRun] = None
             ) -> Any:
-        #raise NotImplementedError("Async not implemented yet")
-        return self._run(patient_id, run_manager)
+        raise NotImplementedError("Async not implemented yet")
+        # return self._run(patient_id, run_manager)

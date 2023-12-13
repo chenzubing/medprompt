@@ -1,0 +1,65 @@
+###
+
+POST http://hapi.fhir.org/baseR4 HTTP/1.1
+Content-Type: application/fhir+json
+
+{
+    "resourceType": "Bundle",
+    "type": "transaction",
+    "entry": [
+        {
+            "resource": {
+                "resourceType": "Patient",
+                "id": "3331979",
+                "identifier": [
+                    {
+                        "system": "http://acme.org/mrns",
+                        "value": "4332435343"
+                    }
+                ],
+                "name": [
+                    {
+                        "family": "Jameson",
+                        "given": [
+                            "J",
+                            "Jonah"
+                        ]
+                    }
+                ],
+                "gender": "male"
+            },
+            "request": {
+                "method": "POST",
+                "url": "Patient"
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "Observation",
+                "status": "final",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "789-8",
+                            "display": "Erythrocytes [#/volume] in Blood by Automated count"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/3331979"
+                },
+                "valueQuantity": {
+                    "value": 4.12,
+                    "unit": "10 trillion/L",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "10*12/L"
+                }
+            },
+            "request": {
+                "method": "POST",
+                "url": "Observation"
+            }
+        }
+    ]
+}

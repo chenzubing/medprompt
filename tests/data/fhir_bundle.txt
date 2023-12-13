@@ -1,0 +1,60 @@
+{
+    "resourceType": "Bundle",
+    "type": "transaction",
+    "entry": [
+        {
+            "resource": {
+                "resourceType": "Patient",
+                "id": "41399401",
+                "identifier": [
+                    {
+                        "system": "http://acme.org/mrns",
+                        "value": "4332435343"
+                    }
+                ],
+                "name": [
+                    {
+                        "family": "Menon",
+                        "given": [
+                            "J",
+                            "Rajeev"
+                        ]
+                    }
+                ],
+                "gender": "male"
+            },
+            "request": {
+                "method": "POST",
+                "url": "Patient"
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "Observation",
+                "status": "final",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "789-8",
+                            "display": "Erythrocytes [#/volume] in Blood by Automated count"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/41399401"
+                },
+                "valueQuantity": {
+                    "value": 4.12,
+                    "unit": "10 trillion/L",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "10*12/L"
+                }
+            },
+            "request": {
+                "method": "POST",
+                "url": "Observation"
+            }
+        }
+    ]
+}

@@ -1,0 +1,22 @@
+{
+    "resourceType": "Observation",
+    "status": "final",
+    "code": {
+        "coding": [
+            {
+                "system": "http://loinc.org",
+                "code": "789-8",
+                "display": "Erythrocytes [#/volume] in Blood by Automated count"
+            }
+        ]
+    },
+    "subject": {
+        "reference": "Patient/41399401"
+    },
+    "valueQuantity": {
+        "value": 4.12,
+        "unit": "10 trillion/L",
+        "system": "http://unitsofmeasure.org",
+        "code": "10*12/L"
+    }
+}

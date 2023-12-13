@@ -9,7 +9,10 @@ Healthcare inspared LLM prompts
 :maxdepth: 2
 
 Overview <readme>
-List of Templates <info/index>
+Prompt Templates <info/prompts>
+Tools <info/tools>
+Chains <info/chains>
+Agents <info/agents>
 Usage Instructions <info/instructions>
 Module Reference <api/modules>
 Contributions & Help <contributing>
