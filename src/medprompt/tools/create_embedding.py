@@ -115,14 +115,14 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
 
             # Store in FAISS
             elif self.VECTORSTORE_NAME == "faiss":
-                db = FAISS.from_texts(
-                    texts=[chunk["page_content"] for chunk in chunks],
-                    metadatas=[chunk["metadata"] for chunk in chunks],
-                    embedding=self.embedder,
-                )
                 fname = os.getenv("FAISS_DIR", "/tmp/faiss") + "/" + patient_id + ".index"
-                db.save_local(fname)
-                
+                if not os.path.exists(fname):
+                    db = FAISS.from_texts(
+                        texts=[chunk["page_content"] for chunk in chunks],
+                        metadatas=[chunk["metadata"] for chunk in chunks],
+                        embedding=self.embedder,
+                    )
+                    db.save_local(fname)
             else:
                 logging.info("No vector store found for patient with id: " + patient_id)
                 # return "No vector store found for patient with id: {}".format(patient_id)
