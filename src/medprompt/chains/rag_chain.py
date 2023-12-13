@@ -89,9 +89,6 @@ def check_index(input_object):
     else:
         raise Exception("No vectorstore")
     vectorstore.persist()
-    if vectorstore._collection.count() == 0:
-        logging.info("Indexing is not complete. Waiting for 20 seconds.")
-        time.sleep(20)
     return vectorstore.as_retriever().get_relevant_documents(input_object["input"], k=10)
 
 
