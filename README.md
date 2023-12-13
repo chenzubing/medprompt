@@ -14,6 +14,9 @@
 * **Agents** uses an LLM to orchestrate Chains and Tools to acheive the overarching goal. Example: [Answer a doctors question related to a patient. Find patient, get health record, generate embedding and generate answer](src/medprompt/agents/fhir_agent.py)
 * **Personas** are [Agency](https://github.com/operand/agency) based abstraction for **agent of agents** according to the [actor model](https://en.wikipedia.org/wiki/Actor_model).
 
+### An example *(Names correspond to the files in the repository)*
+[![Agent](https://github.com/dermatologist/medprompt/blob/develop/notes/agent.drawio.svg)](https://github.com/dermatologist/medprompt/blob/develop/notes/agent.drawio.svg)
+
 #### Disclaimer:
 *This repository is not associated with the [Medprompt method of prompting](https://arxiv.org/pdf/2311.16452.pdf). In this generic repository, [I](https://nuchange.ca) will be trying to implement the method using langchain abstractions. Get in touch to share your thoughts via [GitHub discussions](https://github.com/dermatologist/medprompt/discussions). Please submit a PR with a link to the official implementation if any.*
 
