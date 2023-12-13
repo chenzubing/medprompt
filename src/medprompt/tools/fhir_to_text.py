@@ -22,6 +22,7 @@ from langchain.pydantic_v1 import BaseModel, Field
 
 from .. import MedPrompter, get_time_diff_from_today
 from .get_medical_record import GetMedicalRecordTool
+from .create_embedding import CreateEmbeddingFromFhirBundle
 
 class SearchInput(BaseModel):
     patient_id: str = Field()
@@ -41,6 +42,7 @@ class ConvertFhirToTextTool(BaseTool):
             patient_id: str = None,
             run_manager: Optional[CallbackManagerForToolRun] = None
             ) -> str:
+        _ = CreateEmbeddingFromFhirBundle().run(patient_id)
         prompt = MedPrompter()
         # Get the patient's medical record
         get_medical_record_tool = GetMedicalRecordTool()
@@ -51,6 +53,7 @@ class ConvertFhirToTextTool(BaseTool):
             patient_id: str = None,
             run_manager: Optional[AsyncCallbackManagerForToolRun] = None
             ) -> Any:
+        _ = await CreateEmbeddingFromFhirBundle().arun(patient_id)
         prompt = MedPrompter()
         # Get the patient's medical record
         get_medical_record_tool = GetMedicalRecordTool()
