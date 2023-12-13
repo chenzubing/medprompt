@@ -11,9 +11,9 @@ setuptools_scm
 wheel
 tox
 aioresponses
-langserve
-fastapi
-uvicorn
 pytest-asyncio
 google-cloud-aiplatform
 pytest-order
+#langserve
+#fastapi
+#uvicorn
