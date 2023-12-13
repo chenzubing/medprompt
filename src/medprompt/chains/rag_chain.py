@@ -120,7 +120,7 @@ class ChatHistory(BaseModel):
 
     chat_history: List[str] = Field(default=[])
     input: str = Field(default="Give a summary.")
-    patient_id: str = Field(default="123unknown")
+    patient_id: str = Field(default="123456")
 
 def get_runnable(**kwargs):
     """Get the runnable chain."""
