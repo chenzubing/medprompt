@@ -112,7 +112,7 @@ jsonpointer==2.4
     # via jsonpatch
 langchain==0.0.350
     # via medprompt (setup.py)
-langchain-core==0.0.12
+langchain-core==0.1.0
     # via langchain
 langsmith==0.0.69
     # via
