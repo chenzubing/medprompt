@@ -21,7 +21,7 @@ from langchain.callbacks.manager import (AsyncCallbackManagerForToolRun,
                                          CallbackManagerForToolRun)
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.tools import BaseTool
-from langchain.vectorstores import Redis, Chroma
+from langchain.vectorstores import Redis, Chroma, FAISS
 from langchain.pydantic_v1 import BaseModel, Field
 from .. import MedPrompter, get_time_diff_from_today
 from .get_medical_record import GetMedicalRecordTool
@@ -51,7 +51,7 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
 
     # Index schema
     INDEX_SCHEMA = os.getenv("INDEX_SCHEMA", "/tmp/redis_schema.yaml")
-    VECTORSTORE_NAME = os.getenv("VECTORSTORE_NAME", "chroma")
+    VECTORSTORE_NAME = os.getenv("VECTORSTORE_NAME", "faiss")
 
     def _run(
             self,
@@ -112,6 +112,17 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
                     ids=[chunk["metadata"]["resourceID"] for chunk in chunks],
                     collection_name=patient_id
                 )
+
+            # Store in FAISS
+            elif self.VECTORSTORE_NAME == "faiss":
+                db = FAISS.from_texts(
+                    texts=[chunk["page_content"] for chunk in chunks],
+                    metadatas=[chunk["metadata"] for chunk in chunks],
+                    embedding=self.embedder,
+                )
+                fname = os.getenv("FAISS_DIR", "/tmp/faiss") + "/" + patient_id + ".index"
+                db.save_local(fname)
+                
             else:
                 logging.info("No vector store found for patient with id: " + patient_id)
                 # return "No vector store found for patient with id: {}".format(patient_id)

@@ -7,15 +7,15 @@ import json
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
 
-# @pytest.mark.order(1)
-# def test_create_embedding_from_fhir_bundle(patient_id):
-#     # Initialize the class
-#     create_embedding = CreateEmbeddingFromFhirBundle()
+@pytest.mark.order(1)
+def test_create_embedding_from_fhir_bundle(patient_id):
+    # Initialize the class
+    create_embedding = CreateEmbeddingFromFhirBundle()
 
-#     # Test the _run method
-#     result = create_embedding._run(patient_id=patient_id)
-#     print(result)
-#     assert result is not None
+    # Test the _run method
+    result = create_embedding._run(patient_id=patient_id)
+    print(result)
+    assert result is not None
 
 
 # @pytest.mark.order(2)

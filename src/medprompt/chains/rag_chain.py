@@ -27,7 +27,7 @@ from langchain.schema import format_document
 from langchain.schema.output_parser import StrOutputParser
 from langchain.schema.runnable import RunnableMap, RunnablePassthrough
 from langchain.tools import tool
-from langchain.vectorstores import Chroma, Redis
+from langchain.vectorstores import Chroma, Redis, FAISS
 from pydantic import BaseModel, Field
 
 
@@ -44,16 +44,13 @@ Follow Up Question: {input}
 Standalone question:"""
 CONDENSE_QUESTION_PROMPT = PromptTemplate.from_template(_TEMPLATE)
 
-ANSWER_TEMPLATE = """
-Give clinical interpretations based only on the facts in the context.
-Mention the time period whenever possible.
-Do not make up any information that is not in the context.
-Answer the clinical question based ONLY on the following context:
-If the context below is empty, say so and do not answer the question.
+ANSWER_TEMPLATE = """Answer the following question based only on the available context below.
 
-Context: {context}
+Context:
+{context}
 
-Question: {input}
+Question:
+{input}
 
 """
 ANSWER_PROMPT = ChatPromptTemplate.from_template(ANSWER_TEMPLATE)
@@ -62,7 +59,7 @@ EMBED_MODEL = os.getenv("EMBED_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
 INDEX_SCHEMA = os.getenv("INDEX_SCHEMA", "/tmp/redis_schema.yaml")
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
 embedding = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
-VECTORSTORE_NAME = os.getenv("VECTORSTORE_NAME", "chroma")
+VECTORSTORE_NAME = os.getenv("VECTORSTORE_NAME", "faiss")
 
 # Load LLMs
 _main_llm = os.getenv("MAIN_LLM", "text_bison_001_model_v1.txt")
@@ -86,9 +83,14 @@ def check_index(input_object):
         create_embedding_tool = CreateEmbeddingFromFhirBundle()
         _ = create_embedding_tool.run(patient_id)
         vectorstore = Chroma(collection_name=patient_id, persist_directory=os.getenv("CHROMA_DIR", "/tmp/chroma"), embedding_function=embedding)
+        vectorstore.persist()
+    elif VECTORSTORE_NAME == "faiss":
+        create_embedding_tool = CreateEmbeddingFromFhirBundle()
+        _ = create_embedding_tool.run(patient_id)
+        fname = os.getenv("FAISS_DIR", "/tmp/faiss") + "/" + patient_id + ".index"
+        vectorstore = FAISS.load_local(fname, embeddings=embedding)
     else:
         raise Exception("No vectorstore")
-    vectorstore.persist()
     return vectorstore.as_retriever().get_relevant_documents(input_object["input"], k=10)
 
 

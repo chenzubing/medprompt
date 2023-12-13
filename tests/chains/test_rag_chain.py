@@ -16,7 +16,7 @@ def test_check_index(patient_id):
 def test_get_rag_chain_not_mentioned(patient_id):
     input = {
         "patient_id": patient_id,
-        "input": "What is the patient's weight?",
+        "input": "What is the weight of the patient?",
         "chat_history": [""]
     }
     output = get_rag_tool(input)
