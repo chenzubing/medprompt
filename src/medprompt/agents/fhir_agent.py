@@ -12,7 +12,14 @@ class SearchInput(BaseModel):
     input: str
 
 class FhirAgent:
-    def __init__(self, template_path=None, llm_model="text_bison_model_v1.txt", prefix="fhir_agent_prefix_v1.jinja", suffix="fhir_agent_suffix_v1.jinja"):
+    def __init__(
+            self,
+            template_path =None,
+            llm_model="text_bison_model_v1.txt",
+            prefix="fhir_agent_prefix_v1.jinja",
+            suffix="fhir_agent_suffix_v1.jinja",
+            tools: List = [FhirPatientSearchTool(), CreateEmbeddingFromFhirBundle(), ConvertFhirToTextTool(), get_rag_tool],
+        ):
         self.med_prompter = MedPrompter()
         if ".txt" not in llm_model:
             llm_model = llm_model + ".txt"
@@ -27,7 +34,7 @@ class FhirAgent:
         self.prefix = self.med_prompter.generate_prompt()
         self.med_prompter.set_template(template_path=template_path, template_name=suffix)
         self.suffix = self.med_prompter.generate_prompt()
-        self.tools = [FhirPatientSearchTool(), CreateEmbeddingFromFhirBundle(), ConvertFhirToTextTool(), get_rag_tool]
+        self.tools = tools
         self.agent_kwargs = {
             "prefix": self.prefix,
             "suffix": self.suffix,
