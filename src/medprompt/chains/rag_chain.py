@@ -32,7 +32,7 @@ from pydantic import BaseModel, Field
 
 
 from .. import MedPrompter
-from ..tools import CreateEmbeddingFromFhirBundle
+# from ..tools import CreateEmbeddingFromFhirBundle
 
 med_prompter = MedPrompter()
 _TEMPLATE = """Given the following chat history and a follow up question, rephrase the
@@ -74,19 +74,19 @@ clinical_llm = loads(_llm_str)
 def check_index(input_object):
     patient_id = input_object["patient_id"]
     if VECTORSTORE_NAME == "redis":
-        create_embedding_tool = CreateEmbeddingFromFhirBundle()
-        _ = create_embedding_tool.run(patient_id)
+        # create_embedding_tool = CreateEmbeddingFromFhirBundle()
+        # _ = create_embedding_tool.run(patient_id)
         vectorstore = Redis.from_existing_index(
             embedding=embedding, index_name=patient_id, schema=INDEX_SCHEMA, redis_url=REDIS_URL
         )
     elif VECTORSTORE_NAME == "chroma":
-        create_embedding_tool = CreateEmbeddingFromFhirBundle()
-        _ = create_embedding_tool.run(patient_id)
+        # create_embedding_tool = CreateEmbeddingFromFhirBundle()
+        # _ = create_embedding_tool.run(patient_id)
         vectorstore = Chroma(collection_name=patient_id, persist_directory=os.getenv("CHROMA_DIR", "/tmp/chroma"), embedding_function=embedding)
         vectorstore.persist()
     elif VECTORSTORE_NAME == "faiss":
-        create_embedding_tool = CreateEmbeddingFromFhirBundle()
-        _ = create_embedding_tool.run(patient_id)
+        # create_embedding_tool = CreateEmbeddingFromFhirBundle()
+        # _ = create_embedding_tool.run(patient_id)
         fname = os.getenv("FAISS_DIR", "/tmp/faiss") + "/" + patient_id + ".index"
         vectorstore = FAISS.load_local(fname, embeddings=embedding)
     else:
@@ -148,6 +148,7 @@ def get_rag_tool(**kwargs):
     Returns a chain that can be used to finally answer a question based on a patient's medical record.
     Use this chain to answer a question as a final step if it was not found before.
     Do not use this tool again with the same input/query.
+    Use the tool to create index for medical record before using this tool.
 
     Args:
         patient_id (str): The id of the patient to search for.
