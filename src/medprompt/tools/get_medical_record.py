@@ -24,6 +24,7 @@ from langchain.callbacks.manager import (AsyncCallbackManagerForToolRun,
 from langchain.tools import BaseTool, StructuredTool, Tool, tool
 from langchain.pydantic_v1 import BaseModel, Field
 import logging
+from ..utils import FhirServer
 
 class SearchInput(BaseModel):
     patient_id: str = Field()
@@ -46,13 +47,8 @@ class GetMedicalRecordTool(StructuredTool):
         if not url:
             raise ValueError("FHIR_SERVER_URL environment variable not set")
         query = self._format_query(patient_id)
-        try:
-            response = httpx.get(url + query)
-            response.raise_for_status()
-            _response = json.loads(response.text)
-        except:
-            logging.error("FHIR server not responding")
-            return "Sorry I cannot find the answer as the FHIR server is not responding."
+        _url = url + query
+        _response = FhirServer.call_fhir_server(_url)
         if _response["total"] >100:
             logging.info("Patient record too large")
             return "Sorry, the patient's record is too large to be loaded."
@@ -71,14 +67,8 @@ class GetMedicalRecordTool(StructuredTool):
         if not url:
             raise ValueError("FHIR_SERVER_URL environment variable not set")
         query = self._format_query(patient_id)
-        try:
-            async with httpx.AsyncClient() as client:
-                response = await client.get(url + query)
-            response.raise_for_status()
-            _response = json.loads(response.text)
-        except:
-            logging.error("FHIR server not responding")
-            return "Sorry I cannot find the answer as the FHIR server is not responding."
+        _url = url + query
+        _response = await FhirServer.async_call_fhir_server(_url)
         if _response["total"] >100:
             logging.info("Patient record too large")
             return "Sorry, the patient's record is too large to be loaded."

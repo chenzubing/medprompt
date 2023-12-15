@@ -45,12 +45,12 @@ def test_format_query():
     assert result == expected_query
 
 
-def test_integration_run():
+def test_integration_run(patient_id):
     # Arrange
     tool = GetMedicalRecordTool()
 
     # Act
-    result = tool._run(patient_id='45657')
+    result = tool._run(patient_id=patient_id)
 
     # Assert
     assert result is not None
