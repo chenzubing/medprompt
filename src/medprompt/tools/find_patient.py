@@ -27,7 +27,7 @@ class SearchInput(BaseModel):
     birth_date: Optional[str] = Field()
     patient_id: Optional[str] = Field()
 # Usage: tools =[FhirPatientSearchTool()]
-class FhirPatientSearchTool(StructuredTool):
+class FhirPatientSearchTool(StructuredTool, FhirServer):
     name = "patient_fhir_search"
     description = """
     Searches FHIR server for a patient with available data.
@@ -49,11 +49,7 @@ class FhirPatientSearchTool(StructuredTool):
             birth_date: str = None,
             patient_id: str = None,
             run_manager: Optional[CallbackManagerForToolRun] = None,
-            fhir_server = FhirServer
             ) -> Any:
-        url = os.environ.get("FHIR_SERVER_URL", 'http://hapi.fhir.org/baseR4')
-        if not url:
-            raise ValueError("FHIR_SERVER_URL environment variable not set")
         params = {}
         if patient_id:
             params["_id"] = patient_id
@@ -64,8 +60,11 @@ class FhirPatientSearchTool(StructuredTool):
                 params["family"] = family
             if birth_date:
                 params["birthdate"] = birth_date
-        _url = url + "/Patient"
-        _response = fhir_server.call_fhir_server(_url, params)
+        _url = "/Patient"
+        try:
+            _response = super().call_fhir_server(_url, params)
+        except:
+            return "Sorry I cannot find the answer as the FHIR server is not responding or an implementation in not provided."
         return self.process_response(_response)
 
     async def _arun(
@@ -75,11 +74,7 @@ class FhirPatientSearchTool(StructuredTool):
             birth_date: str = None,
             patient_id: str = None,
             run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
-            fhir_server = FhirServer
             ) -> Any:
-        url = os.environ.get("FHIR_SERVER_URL", 'http://hapi.fhir.org/baseR4')
-        if not url:
-            raise ValueError("FHIR_SERVER_URL environment variable not set")
         params = {}
         if patient_id:
             params["_id"] = patient_id
@@ -90,8 +85,11 @@ class FhirPatientSearchTool(StructuredTool):
                 params["family"] = family
             if birth_date:
                 params["birthdate"] = birth_date
-        _url = url + "/Patient"
-        _response = await fhir_server.async_call_fhir_server(_url, params)
+        _url = "/Patient"
+        try:
+            _response = await super().async_call_fhir_server(_url, params)
+        except:
+            return "Sorry I cannot find the answer as the FHIR server is not responding or an implementation in not provided."
         return self.process_response(_response)
 
 

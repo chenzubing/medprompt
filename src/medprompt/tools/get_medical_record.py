@@ -14,17 +14,13 @@
  limitations under the License.
 """
 
-
-import os
 from typing import Any, Optional, Type
-import json
-import httpx
 from langchain.callbacks.manager import (AsyncCallbackManagerForToolRun,
                                          CallbackManagerForToolRun)
 from langchain.tools import BaseTool, StructuredTool, Tool, tool
 from langchain.pydantic_v1 import BaseModel, Field
 import logging
-from ..utils import FhirServer
+
 
 class SearchInput(BaseModel):
     patient_id: str = Field()
@@ -38,18 +34,17 @@ class GetMedicalRecordTool(StructuredTool):
     """
     args_schema: Type[BaseModel] = SearchInput
 
+
     def _run(
             self,
             patient_id: str = None,
             run_manager: Optional[CallbackManagerForToolRun] = None,
-            fhir_server = FhirServer
             ) -> Any:
-        url = os.environ.get("FHIR_SERVER_URL", 'http://hapi.fhir.org/baseR4')
-        if not url:
-            raise ValueError("FHIR_SERVER_URL environment variable not set")
         query = self._format_query(patient_id)
-        _url = url + query
-        _response = fhir_server.call_fhir_server(_url)
+        try:
+            _response = super().call_fhir_server(query)
+        except:
+            return "Sorry I cannot find the answer as the FHIR server is not responding or an implementation in not provided."
         if _response["total"] >100:
             logging.info("Patient record too large")
             return "Sorry, the patient's record is too large to be loaded."
@@ -63,14 +58,10 @@ class GetMedicalRecordTool(StructuredTool):
             self,
             patient_id: str = None,
             run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
-            fhir_server = FhirServer
             ) -> Any:
-        url = os.environ.get("FHIR_SERVER_URL", 'http://hapi.fhir.org/baseR4')
-        if not url:
-            raise ValueError("FHIR_SERVER_URL environment variable not set")
         query = self._format_query(patient_id)
-        _url = url + query
-        _response = await fhir_server.async_call_fhir_server(_url)
+        _url = query
+        _response = await super().async_call_fhir_server(_url)
         if _response["total"] >100:
             logging.info("Patient record too large")
             return "Sorry, the patient's record is too large to be loaded."
