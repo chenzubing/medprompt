@@ -41,14 +41,15 @@ class GetMedicalRecordTool(StructuredTool):
     def _run(
             self,
             patient_id: str = None,
-            run_manager: Optional[CallbackManagerForToolRun] = None
+            run_manager: Optional[CallbackManagerForToolRun] = None,
+            fhir_server = FhirServer
             ) -> Any:
         url = os.environ.get("FHIR_SERVER_URL", 'http://hapi.fhir.org/baseR4')
         if not url:
             raise ValueError("FHIR_SERVER_URL environment variable not set")
         query = self._format_query(patient_id)
         _url = url + query
-        _response = FhirServer.call_fhir_server(_url)
+        _response = fhir_server.call_fhir_server(_url)
         if _response["total"] >100:
             logging.info("Patient record too large")
             return "Sorry, the patient's record is too large to be loaded."
@@ -61,14 +62,15 @@ class GetMedicalRecordTool(StructuredTool):
     async def _arun(
             self,
             patient_id: str = None,
-            run_manager: Optional[AsyncCallbackManagerForToolRun] = None
+            run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
+            fhir_server = FhirServer
             ) -> Any:
         url = os.environ.get("FHIR_SERVER_URL", 'http://hapi.fhir.org/baseR4')
         if not url:
             raise ValueError("FHIR_SERVER_URL environment variable not set")
         query = self._format_query(patient_id)
         _url = url + query
-        _response = await FhirServer.async_call_fhir_server(_url)
+        _response = await fhir_server.async_call_fhir_server(_url)
         if _response["total"] >100:
             logging.info("Patient record too large")
             return "Sorry, the patient's record is too large to be loaded."

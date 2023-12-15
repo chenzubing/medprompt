@@ -48,7 +48,8 @@ class FhirPatientSearchTool(StructuredTool):
             family: str = None,
             birth_date: str = None,
             patient_id: str = None,
-            run_manager: Optional[CallbackManagerForToolRun] = None
+            run_manager: Optional[CallbackManagerForToolRun] = None,
+            fhir_server = FhirServer
             ) -> Any:
         url = os.environ.get("FHIR_SERVER_URL", 'http://hapi.fhir.org/baseR4')
         if not url:
@@ -64,7 +65,7 @@ class FhirPatientSearchTool(StructuredTool):
             if birth_date:
                 params["birthdate"] = birth_date
         _url = url + "/Patient"
-        _response = FhirServer.call_fhir_server(_url, params)
+        _response = fhir_server.call_fhir_server(_url, params)
         return self.process_response(_response)
 
     async def _arun(
@@ -73,7 +74,8 @@ class FhirPatientSearchTool(StructuredTool):
             family: str = None,
             birth_date: str = None,
             patient_id: str = None,
-            run_manager: Optional[AsyncCallbackManagerForToolRun] = None
+            run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
+            fhir_server = FhirServer
             ) -> Any:
         url = os.environ.get("FHIR_SERVER_URL", 'http://hapi.fhir.org/baseR4')
         if not url:
@@ -89,7 +91,7 @@ class FhirPatientSearchTool(StructuredTool):
             if birth_date:
                 params["birthdate"] = birth_date
         _url = url + "/Patient"
-        _response = await FhirServer.async_call_fhir_server(_url, params)
+        _response = await fhir_server.async_call_fhir_server(_url, params)
         return self.process_response(_response)
 
 
