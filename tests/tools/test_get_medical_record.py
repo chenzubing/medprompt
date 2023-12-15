@@ -50,7 +50,9 @@ def test_integration_run(patient_id):
     tool = GetMedicalRecordTool()
 
     # Act
-    result = tool._run(patient_id=patient_id)
+    result = tool.run(patient_id)
+
+    print(result)
 
     # Assert
     assert result is not None
