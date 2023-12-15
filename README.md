@@ -26,13 +26,6 @@ This repository includes templates for converting **FHIR resources into a text r
 ### FHIR2Calculator -> Calculate clinical scores from a FHIR Bundle (*Work in progress*)
 Clinical calculators are tools that help healthcare professionals make medical decisions by providing them with quick and easy access to various medical formulas, scores, and algorithms. Calculations performed by LLMs are not reliable. FHIR2Calculator performs calculations on data fields extracted from a FHIR bundle and outputs the results as plain text that can be injected into LLM prompts.
 
-### Healthcare tools and chains for LangChain agents
-Tools are functions that Langchain agents can use to carry out tasks based on the tool description.
-Example usage:
-```
-from medprompt.tools import FhirPatientSearchTool
-tools = [FhirPatientSearchTool()]
-```
 Documentation is in progress. Any help will be highly appreciated.
 ## [Documentation & List of Templates](https://dermatologist.github.io/medprompt/)
 
@@ -62,8 +55,8 @@ after cloning the repository
 pip install -e .[embedding]
 ```
 
-### Import
 
+### Using templates
 ```
 from medprompt import MedPrompter
 prompt = MedPrompter()
@@ -76,6 +69,34 @@ messages = prompt.generate_prompt(
     {"question": "Find Conditions for patient with first name John?"})
 
 print(messages)
+```
+
+### Using Tools and chains in an agent
+```
+from medprompt.tools import FhirPatientSearchTool
+tools = [FhirPatientSearchTool()]
+```
+
+### Using agents in LangServe
+```
+from medprompt.agents import FhirAgent
+agent = FhirAgent()
+add_routes(
+    app,
+    FhirAgent.get_agent(),
+    path="/agent",
+)
+```
+
+### Using Space
+```
+from src.medprompt.space.fhir_agent import SpaceFhirAgent
+
+# Create the space instance
+with LocalSpace() as space:
+
+    # Add a host agent to the space, exposing access to the host system
+    space.add(SpaceFhirAgent, "SpaceFhirAgent")
 ```
 
 * [Example hosting using LangServe](/t_install.py)
