@@ -25,7 +25,6 @@ class HapiFhirServer:
         """
         base_url = 'http://hapi.fhir.org/baseR4'
         try:
-            print (base_url + url)
             response = httpx.get(base_url + url, params=params)
             response.raise_for_status()
             _response = json.loads(response.text)
@@ -50,7 +49,7 @@ class HapiFhirServer:
         try:
             async with httpx.AsyncClient() as client:
                 response = await client.get(base_url + url, params=params)
-            
+
             response.raise_for_status()
             _response = json.loads(response.text)
         except:

@@ -24,7 +24,6 @@ from langchain.tools import BaseTool
 from langchain.vectorstores import Redis, Chroma, FAISS
 from langchain.pydantic_v1 import BaseModel, Field
 from .. import MedPrompter, get_time_diff_from_today
-from .get_medical_record import GetMedicalRecordTool
 
 class SearchInput(BaseModel):
     patient_id: str = Field()
@@ -61,8 +60,11 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
         prompt = MedPrompter()
         chunks = []
         # Get the patient's medical record
-        get_medical_record_tool = GetMedicalRecordTool()
-        bundle_input = get_medical_record_tool.run(patient_id)
+        try:
+            bundle_input = super().call(patient_id=patient_id)
+        except:
+            return "Sorry, Create Embedding needs an implementation of Get Medical Record Tool."
+        bundle_input = super().run(patient_id)
         try:
             for entry in bundle_input["entry"]:
                 resource = entry["resource"]
