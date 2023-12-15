@@ -3,11 +3,15 @@ from unittest.mock import patch
 
 import pytest
 from src.medprompt.tools import FhirPatientSearchTool
+from src.medprompt.utils.hapi_server import HapiFhirServer
 
+
+class _FhirPatientSearchTool(FhirPatientSearchTool, HapiFhirServer):
+    pass
 
 @pytest.fixture
 def fhir_search_tool():
-    return FhirPatientSearchTool()
+    return _FhirPatientSearchTool()
 
 @pytest.fixture
 def fhir_bundle():
@@ -37,3 +41,14 @@ def test_run(mock_get, fhir_search_tool, fhir_bundle):
 #         result = await fhir_search_tool._arun(**search_input.dict())
 #         assert isinstance(result, Bundle)
 #         assert result.resource_type == "Bundle"
+
+def test_integration_run(fhir_search_tool, patient_id):
+
+
+    # Act
+    result = fhir_search_tool._run(patient_id=patient_id)
+
+    print(result)
+
+    # Assert
+    assert result is not None

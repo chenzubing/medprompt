@@ -20,14 +20,13 @@ from langchain.callbacks.manager import (AsyncCallbackManagerForToolRun,
                                          CallbackManagerForToolRun)
 from langchain.tools import BaseTool, StructuredTool, Tool, tool
 from langchain.pydantic_v1 import BaseModel, Field
-from ..utils import FhirServer
 class SearchInput(BaseModel):
     given: Optional[str] = Field()
     family: Optional[str] = Field()
     birth_date: Optional[str] = Field()
     patient_id: Optional[str] = Field()
 # Usage: tools =[FhirPatientSearchTool()]
-class FhirPatientSearchTool(StructuredTool, FhirServer):
+class FhirPatientSearchTool(StructuredTool):
     name = "patient_fhir_search"
     description = """
     Searches FHIR server for a patient with available data.
