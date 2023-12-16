@@ -16,6 +16,7 @@
 
 import os
 import logging
+from kink import di
 from typing import Any, Optional, Type
 from langchain.callbacks.manager import (AsyncCallbackManagerForToolRun,
                                          CallbackManagerForToolRun)
@@ -24,7 +25,6 @@ from langchain.tools import BaseTool
 from langchain.vectorstores import Redis, Chroma, FAISS
 from langchain.pydantic_v1 import BaseModel, Field
 from .. import MedPrompter, get_time_diff_from_today
-from .get_medical_record import GetMedicalRecordTool
 
 class SearchInput(BaseModel):
     patient_id: str = Field()
@@ -60,14 +60,15 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
             ) -> str:
         prompt = MedPrompter()
         chunks = []
-        # Get the patient's medical record
-        get_medical_record_tool = GetMedicalRecordTool()
-        bundle_input = get_medical_record_tool.run(patient_id)
+        try:
+            get_medical_record_tool = di["get_medical_record_tool"]
+            bundle_input = get_medical_record_tool._run(patient_id=patient_id)
+        except:
+            return "Sorry, Create Embedding needs an implementation of Get Medical Record Tool."
         try:
             for entry in bundle_input["entry"]:
                 resource = entry["resource"]
-                # if resource["resourceType"] == "Patient":
-                #     patient_id = resource["id"]
+
                 if resource["resourceType"] == "Patient" or resource["resourceType"] == "Observation" \
                     or resource["resourceType"] == "DocumentReference":
                     resource["time_diff"] = get_time_diff_from_today

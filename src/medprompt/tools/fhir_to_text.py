@@ -15,13 +15,13 @@
 """
 
 from typing import Any, Optional, Type
+from kink import di
 from langchain.callbacks.manager import (AsyncCallbackManagerForToolRun,
                                          CallbackManagerForToolRun)
 from langchain.tools import BaseTool
 from langchain.pydantic_v1 import BaseModel, Field
 
 from .. import MedPrompter, get_time_diff_from_today
-from .get_medical_record import GetMedicalRecordTool
 
 class SearchInput(BaseModel):
     patient_id: str = Field()
@@ -42,19 +42,24 @@ class ConvertFhirToTextTool(BaseTool):
             run_manager: Optional[CallbackManagerForToolRun] = None
             ) -> str:
         prompt = MedPrompter()
-        # Get the patient's medical record
-        get_medical_record_tool = GetMedicalRecordTool()
-        bundle_input = get_medical_record_tool.run(patient_id)
+        try:
+            get_medical_record_tool = di["get_medical_record_tool"]
+            bundle_input = get_medical_record_tool._run(patient_id=patient_id)
+        except:
+            return "Sorry, Fhir to Text needs an implementation of Get Medical Record Tool."
         return self._process_entries(prompt, bundle_input, patient_id)
+
     async def _arun(
             self,
             patient_id: str = None,
             run_manager: Optional[AsyncCallbackManagerForToolRun] = None
             ) -> Any:
         prompt = MedPrompter()
-        # Get the patient's medical record
-        get_medical_record_tool = GetMedicalRecordTool()
-        bundle_input = await get_medical_record_tool.arun(patient_id)
+        try:
+            get_medical_record_tool = di["get_medical_record_tool"]
+            bundle_input = await get_medical_record_tool._arun(patient_id=patient_id)
+        except:
+            return "Sorry, Fhir to Text needs an implementation of Get Medical Record Tool."
         return self._process_entries(prompt, bundle_input, patient_id)
 
     #* Override if required
