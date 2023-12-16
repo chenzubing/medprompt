@@ -3,15 +3,10 @@ from unittest.mock import patch
 
 import pytest
 from src.medprompt.tools import FhirPatientSearchTool
-from src.medprompt.utils.hapi_server import HapiFhirServer
-
-
-class _FhirPatientSearchTool(FhirPatientSearchTool, HapiFhirServer):
-    pass
 
 @pytest.fixture
 def fhir_search_tool():
-    return _FhirPatientSearchTool()
+    return FhirPatientSearchTool()
 
 @pytest.fixture
 def fhir_bundle():
