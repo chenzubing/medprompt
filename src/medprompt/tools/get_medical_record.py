@@ -81,39 +81,49 @@ class GetMedicalRecordTool(StructuredTool):
             query += "&_revinclude=MedicationRequest:subject"
         return query
 
+    call = _run
+    async_call = _arun
 
-    def call(
-            self,
-            patient_id: str = None,
-            run_manager: Optional[CallbackManagerForToolRun] = None,
-            ) -> Any:
-        query = self._format_query(patient_id)
-        try:
-            _response = super().call_fhir_server(query)
-        except:
-            return "Sorry I cannot find the answer as the FHIR server is not responding or an implementation in not provided."
-        if _response["total"] >100:
-            _logger.info("Patient record too large")
-            return "Sorry, the patient's record is too large to be loaded."
-        elif _response["total"] < 1:
-            _logger.info("Patient record not found")
-            return "This patient does not have a record."
-        else:
-            return _response
+    # def call(
+    #         self,
+    #         patient_id: str = None,
+    #         run_manager: Optional[CallbackManagerForToolRun] = None,
+    #         ) -> Any:
+    #     """ A copy of the _run method
+    #         This is called by other tools that inherit from this tool.
+    #         This avoids conflict with the _run method of the tool that inherits from this tool.
+    #     """
+    #     query = self._format_query(patient_id)
+    #     try:
+    #         _response = super().call_fhir_server(query)
+    #     except:
+    #         return "Sorry I cannot find the answer as the FHIR server is not responding or an implementation in not provided."
+    #     if _response["total"] >100:
+    #         _logger.info("Patient record too large")
+    #         return "Sorry, the patient's record is too large to be loaded."
+    #     elif _response["total"] < 1:
+    #         _logger.info("Patient record not found")
+    #         return "This patient does not have a record."
+    #     else:
+    #         return _response
 
-    async def async_call(
-            self,
-            patient_id: str = None,
-            run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
-            ) -> Any:
-        query = self._format_query(patient_id)
-        _url = query
-        _response = await super().async_call_fhir_server(_url)
-        if _response["total"] >100:
-            _logger.info("Patient record too large")
-            return "Sorry, the patient's record is too large to be loaded."
-        elif _response["total"] < 1:
-            _logger.info("Patient record not found")
-            return "This patient does not have a record."
-        else:
-            return _response
+    # async def async_call(
+    #         self,
+    #         patient_id: str = None,
+    #         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
+    #         ) -> Any:
+    #     """ A copy of the _arun method
+    #         This is called by other tools that inherit from this tool.
+    #         This avoids conflict with the _run method of the tool that inherits from this tool.
+    #     """
+    #     query = self._format_query(patient_id)
+    #     _url = query
+    #     _response = await super().async_call_fhir_server(_url)
+    #     if _response["total"] >100:
+    #         _logger.info("Patient record too large")
+    #         return "Sorry, the patient's record is too large to be loaded."
+    #     elif _response["total"] < 1:
+    #         _logger.info("Patient record not found")
+    #         return "This patient does not have a record."
+    #     else:
+    #         return _response

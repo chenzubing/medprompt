@@ -72,9 +72,24 @@ print(messages)
 ```
 
 ### Using Tools and chains in an agent
+
+[FHIR Server base class](src/medprompt/utils/fhir_server.py)
+[Example Fhir Agent](src/medprompt/agents/fhir_agent.py)
 ```
 from medprompt.tools import FhirPatientSearchTool
-tools = [FhirPatientSearchTool()]
+
+# Requires a FhirServer implementation
+class _FhirPatientSearchTool(FhirPatientSearchTool, HapiFhirServer):
+    pass
+
+class _GetMedicalRecordTool(GetMedicalRecordTool, HapiFhirServer):
+    pass
+
+# Requires a Getmedical record with FhirServer FhirServer implementation
+class _CreateEmbeddingFromFhirBundle(CreateEmbeddingFromFhirBundle, _GetMedicalRecordTool):
+    pass
+
+tools = [_FhirPatientSearchTool(), _CreateEmbeddingFromFhirBundle(), _ConvertFhirToTextTool(), get_rag_tool]
 ```
 
 ### Using agents in LangServe

@@ -64,7 +64,6 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
             bundle_input = super().call(patient_id=patient_id)
         except:
             return "Sorry, Create Embedding needs an implementation of Get Medical Record Tool."
-        bundle_input = super().run(patient_id)
         try:
             for entry in bundle_input["entry"]:
                 resource = entry["resource"]
