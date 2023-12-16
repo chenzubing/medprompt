@@ -28,7 +28,7 @@ from langchain.tools import tool
 from langchain.vectorstores import Chroma, Redis, FAISS
 from pydantic import BaseModel, Field
 
-from src.medprompt.tools.create_embedding import CreateEmbeddingFromFhirBundle
+from ..tools.create_embedding import CreateEmbeddingFromFhirBundle
 
 
 from .. import MedPrompter
