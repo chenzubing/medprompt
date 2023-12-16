@@ -15,6 +15,7 @@
 """
 
 from typing import Any, Optional, Type
+from kink import di
 from langchain.callbacks.manager import (AsyncCallbackManagerForToolRun,
                                          CallbackManagerForToolRun)
 from langchain.tools import BaseTool
@@ -41,12 +42,13 @@ class ConvertFhirToTextTool(BaseTool):
             run_manager: Optional[CallbackManagerForToolRun] = None
             ) -> str:
         prompt = MedPrompter()
-        # Get the patient's medical record
         try:
-            bundle_input = super().call(patient_id=patient_id)
+            get_medical_record_tool = di["get_medical_record_tool"]
+            bundle_input = get_medical_record_tool._run(patient_id=patient_id)
         except:
             return "Sorry, Fhir to Text needs an implementation of Get Medical Record Tool."
         return self._process_entries(prompt, bundle_input, patient_id)
+
     async def _arun(
             self,
             patient_id: str = None,
@@ -55,7 +57,8 @@ class ConvertFhirToTextTool(BaseTool):
         prompt = MedPrompter()
         # Get the patient's medical record
         try:
-            bundle_input = await super().acall(patient_id=patient_id)
+            get_medical_record_tool = di["get_medical_record_tool"]
+            bundle_input = await get_medical_record_tool._arun(patient_id=patient_id)
         except:
             return "Sorry, Fhir to Text needs an implementation of Get Medical Record Tool."
         return self._process_entries(prompt, bundle_input, patient_id)

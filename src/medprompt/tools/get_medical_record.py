@@ -18,14 +18,14 @@ from typing import Any, Optional, Type
 from kink import di
 from langchain.callbacks.manager import (AsyncCallbackManagerForToolRun,
                                          CallbackManagerForToolRun)
-from langchain.tools import StructuredTool
+from langchain.tools import BaseTool
 from langchain.pydantic_v1 import BaseModel, Field
 import logging
 _logger = logging.getLogger(__name__)
 
 class SearchInput(BaseModel):
     patient_id: str = Field()
-class GetMedicalRecordTool(StructuredTool):
+class GetMedicalRecordTool(BaseTool):
     name = "get_medical_record"
     description = """
     Gets the medical record for a patient with a given ID.
