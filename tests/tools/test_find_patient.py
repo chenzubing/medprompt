@@ -23,6 +23,7 @@ def fhir_bundle():
     }
     """
 
+@pytest.mark.order(1)
 @patch('requests.get')
 def test_run(mock_get, fhir_search_tool, fhir_bundle):
     mock_get.return_value.status_code = 200
@@ -42,6 +43,7 @@ def test_run(mock_get, fhir_search_tool, fhir_bundle):
 #         assert isinstance(result, Bundle)
 #         assert result.resource_type == "Bundle"
 
+@pytest.mark.order(2)
 def test_integration_run(fhir_search_tool, patient_id):
 
 

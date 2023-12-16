@@ -14,11 +14,11 @@
  limitations under the License.
 """
 
-import os
 from typing import Any, Optional, Type
+from kink import di
 from langchain.callbacks.manager import (AsyncCallbackManagerForToolRun,
                                          CallbackManagerForToolRun)
-from langchain.tools import BaseTool, StructuredTool, Tool, tool
+from langchain.tools import StructuredTool
 from langchain.pydantic_v1 import BaseModel, Field
 class SearchInput(BaseModel):
     given: Optional[str] = Field()
@@ -49,6 +49,10 @@ class FhirPatientSearchTool(StructuredTool):
             patient_id: str = None,
             run_manager: Optional[CallbackManagerForToolRun] = None
             ) -> Any:
+        try:
+            fhir_server = di["fhir_server"]
+        except:
+            return "Sorry, I cannot find a FHIR server to search."
         params = {}
         if patient_id:
             params["_id"] = patient_id
@@ -61,7 +65,7 @@ class FhirPatientSearchTool(StructuredTool):
                 params["birthdate"] = birth_date
         _url = "/Patient"
         try:
-            _response = super().call_fhir_server(_url, params)
+            _response = fhir_server.call_fhir_server(_url, params)
         except:
             return "Sorry I cannot find the answer as the FHIR server is not responding or an implementation in not provided."
         return self.process_response(_response)
