@@ -1,16 +1,12 @@
 import pytest
 from unittest.mock import patch, Mock
-from src.medprompt.tools.get_medical_record import GetMedicalRecordTool, SearchInput
-from src.medprompt.utils.hapi_server import HapiFhirServer
+from src.medprompt.tools.get_medical_record import GetMedicalRecordTool
 
-
-class _GetMedicalRecordTool(GetMedicalRecordTool, HapiFhirServer):
-    pass
 
 @patch('httpx.get')
 def test_run_method(mock_get):
     # Arrange
-    tool = _GetMedicalRecordTool()
+    tool = GetMedicalRecordTool()
     mock_get.return_value = Mock(status_code=200)
     mock_get.return_value.raise_for_status = Mock()
     mock_get.return_value.text = '{"total": 1}'
@@ -26,7 +22,7 @@ def test_run_method(mock_get):
 @pytest.mark.asyncio
 async def test_arun_method(mock_get):
     # Arrange
-    tool = _GetMedicalRecordTool()
+    tool = GetMedicalRecordTool()
     mock_get.return_value = Mock(status_code=200)
     mock_get.return_value.raise_for_status = Mock()
     mock_get.return_value.text = '{"total": 1}'
@@ -40,7 +36,7 @@ async def test_arun_method(mock_get):
 
 def test_format_query():
     # Arrange
-    tool = _GetMedicalRecordTool()
+    tool = GetMedicalRecordTool()
 
     # Act
     result = tool._format_query(patient_id='123')
@@ -52,7 +48,7 @@ def test_format_query():
 
 def test_integration_run(patient_id):
     # Arrange
-    tool = _GetMedicalRecordTool()
+    tool = GetMedicalRecordTool()
 
     # Act
     result = tool.run(patient_id)

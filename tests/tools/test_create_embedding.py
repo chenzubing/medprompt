@@ -1,24 +1,12 @@
-from medprompt.tools.get_medical_record import GetMedicalRecordTool
-from medprompt.utils.hapi_server import HapiFhirServer
 import pytest
 from src.medprompt.tools.create_embedding import CreateEmbeddingFromFhirBundle
 from src.medprompt.chains.rag_chain import get_rag_tool
-import os
-import requests
-import json
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import Chroma
 
-class _GetMedicalRecordTool(GetMedicalRecordTool, HapiFhirServer):
-    pass
-
-class _CreateEmbeddingFromFhirBundle(CreateEmbeddingFromFhirBundle, _GetMedicalRecordTool):
-    pass
 
 @pytest.mark.order(1)
 def test_create_embedding_from_fhir_bundle(patient_id):
     # Initialize the class
-    create_embedding = _CreateEmbeddingFromFhirBundle()
+    create_embedding = CreateEmbeddingFromFhirBundle()
 
     # Test the _run method
     result = create_embedding._run(patient_id=patient_id)
