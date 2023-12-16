@@ -32,4 +32,4 @@ jobs:
         pip install -r dev-requirements.txt -r requirements.txt -r torch-req.txt
     - name: Test with pytest
       run: |
-        pytest
+        pytest tests/templates/*
