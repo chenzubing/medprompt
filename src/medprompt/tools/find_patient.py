@@ -47,7 +47,7 @@ class FhirPatientSearchTool(StructuredTool):
             family: str = None,
             birth_date: str = None,
             patient_id: str = None,
-            run_manager: Optional[CallbackManagerForToolRun] = None,
+            run_manager: Optional[CallbackManagerForToolRun] = None
             ) -> Any:
         params = {}
         if patient_id:
@@ -72,7 +72,7 @@ class FhirPatientSearchTool(StructuredTool):
             family: str = None,
             birth_date: str = None,
             patient_id: str = None,
-            run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
+            run_manager: Optional[AsyncCallbackManagerForToolRun] = None
             ) -> Any:
         params = {}
         if patient_id:

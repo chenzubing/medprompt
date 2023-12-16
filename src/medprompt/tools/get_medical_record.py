@@ -38,7 +38,7 @@ class GetMedicalRecordTool(StructuredTool):
     def _run(
             self,
             patient_id: str = None,
-            run_manager: Optional[CallbackManagerForToolRun] = None,
+            run_manager: Optional[CallbackManagerForToolRun] = None
             ) -> Any:
         query = self._format_query(patient_id)
         try:
@@ -57,7 +57,7 @@ class GetMedicalRecordTool(StructuredTool):
     async def _arun(
             self,
             patient_id: str = None,
-            run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
+            run_manager: Optional[AsyncCallbackManagerForToolRun] = None
             ) -> Any:
         query = self._format_query(patient_id)
         _url = query
