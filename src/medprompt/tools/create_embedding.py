@@ -16,6 +16,7 @@
 
 import os
 import logging
+from kink import di
 from typing import Any, Optional, Type
 from langchain.callbacks.manager import (AsyncCallbackManagerForToolRun,
                                          CallbackManagerForToolRun)
@@ -59,9 +60,9 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
             ) -> str:
         prompt = MedPrompter()
         chunks = []
-        # Get the patient's medical record
         try:
-            bundle_input = super().call(patient_id=patient_id)
+            get_medical_record_tool = di["get_medical_record_tool"]
+            bundle_input = get_medical_record_tool._run(patient_id=patient_id)
         except:
             return "Sorry, Create Embedding needs an implementation of Get Medical Record Tool."
         try:

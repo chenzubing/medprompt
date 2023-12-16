@@ -55,7 +55,6 @@ class ConvertFhirToTextTool(BaseTool):
             run_manager: Optional[AsyncCallbackManagerForToolRun] = None
             ) -> Any:
         prompt = MedPrompter()
-        # Get the patient's medical record
         try:
             get_medical_record_tool = di["get_medical_record_tool"]
             bundle_input = await get_medical_record_tool._arun(patient_id=patient_id)
