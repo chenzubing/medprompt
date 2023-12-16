@@ -28,6 +28,8 @@ from langchain.tools import tool
 from langchain.vectorstores import Chroma, Redis, FAISS
 from pydantic import BaseModel, Field
 
+from src.medprompt.tools.create_embedding import CreateEmbeddingFromFhirBundle
+
 
 from .. import MedPrompter
 # from ..tools import CreateEmbeddingFromFhirBundle
@@ -72,19 +74,19 @@ clinical_llm = loads(_llm_str)
 def check_index(input_object):
     patient_id = input_object["patient_id"]
     if VECTORSTORE_NAME == "redis":
-        # create_embedding_tool = CreateEmbeddingFromFhirBundle()
-        # _ = create_embedding_tool.run(patient_id)
+        create_embedding_tool = CreateEmbeddingFromFhirBundle()
+        _ = create_embedding_tool.run(patient_id)
         vectorstore = Redis.from_existing_index(
             embedding=embedding, index_name=patient_id, schema=INDEX_SCHEMA, redis_url=REDIS_URL
         )
     elif VECTORSTORE_NAME == "chroma":
-        # create_embedding_tool = CreateEmbeddingFromFhirBundle()
-        # _ = create_embedding_tool.run(patient_id)
+        create_embedding_tool = CreateEmbeddingFromFhirBundle()
+        _ = create_embedding_tool.run(patient_id)
         vectorstore = Chroma(collection_name=patient_id, persist_directory=os.getenv("CHROMA_DIR", "/tmp/chroma"), embedding_function=embedding)
         vectorstore.persist()
     elif VECTORSTORE_NAME == "faiss":
-        # create_embedding_tool = CreateEmbeddingFromFhirBundle()
-        # _ = create_embedding_tool.run(patient_id)
+        create_embedding_tool = CreateEmbeddingFromFhirBundle()
+        _ = create_embedding_tool.run(patient_id)
         fname = os.getenv("FAISS_DIR", "/tmp/faiss") + "/" + patient_id + ".index"
         vectorstore = FAISS.load_local(fname, embeddings=embedding)
     else:
