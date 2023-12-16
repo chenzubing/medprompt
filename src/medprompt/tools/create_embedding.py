@@ -68,8 +68,7 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
         try:
             for entry in bundle_input["entry"]:
                 resource = entry["resource"]
-                # if resource["resourceType"] == "Patient":
-                #     patient_id = resource["id"]
+
                 if resource["resourceType"] == "Patient" or resource["resourceType"] == "Observation" \
                     or resource["resourceType"] == "DocumentReference":
                     resource["time_diff"] = get_time_diff_from_today
