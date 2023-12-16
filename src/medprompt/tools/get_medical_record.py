@@ -14,21 +14,18 @@
  limitations under the License.
 """
 
-
-import os
 from typing import Any, Optional, Type
-import json
-import httpx
+from kink import di
 from langchain.callbacks.manager import (AsyncCallbackManagerForToolRun,
                                          CallbackManagerForToolRun)
-from langchain.tools import BaseTool, StructuredTool, Tool, tool
+from langchain.tools import BaseTool
 from langchain.pydantic_v1 import BaseModel, Field
 import logging
+_logger = logging.getLogger(__name__)
 
 class SearchInput(BaseModel):
     patient_id: str = Field()
-# Usage: tools =[FhirPatientSearchTool()]
-class GetMedicalRecordTool(StructuredTool):
+class GetMedicalRecordTool(BaseTool):
     name = "get_medical_record"
     description = """
     Gets the medical record for a patient with a given ID.
@@ -37,27 +34,26 @@ class GetMedicalRecordTool(StructuredTool):
     """
     args_schema: Type[BaseModel] = SearchInput
 
+
     def _run(
             self,
             patient_id: str = None,
             run_manager: Optional[CallbackManagerForToolRun] = None
             ) -> Any:
-        url = os.environ.get("FHIR_SERVER_URL", 'http://hapi.fhir.org/baseR4')
-        if not url:
-            raise ValueError("FHIR_SERVER_URL environment variable not set")
+        try:
+            fhir_server = di["fhir_server"]
+        except:
+            return "Sorry, I cannot find a FHIR server to search."
         query = self._format_query(patient_id)
         try:
-            response = httpx.get(url + query)
-            response.raise_for_status()
-            _response = json.loads(response.text)
+            _response = fhir_server.call_fhir_server(query)
         except:
-            logging.error("FHIR server not responding")
             return "Sorry I cannot find the answer as the FHIR server is not responding."
         if _response["total"] >100:
-            logging.info("Patient record too large")
+            _logger.info("Patient record too large")
             return "Sorry, the patient's record is too large to be loaded."
         elif _response["total"] < 1:
-            logging.info("Patient record not found")
+            _logger.info("Patient record not found")
             return "This patient does not have a record."
         else:
             return _response
@@ -67,23 +63,21 @@ class GetMedicalRecordTool(StructuredTool):
             patient_id: str = None,
             run_manager: Optional[AsyncCallbackManagerForToolRun] = None
             ) -> Any:
-        url = os.environ.get("FHIR_SERVER_URL", 'http://hapi.fhir.org/baseR4')
-        if not url:
-            raise ValueError("FHIR_SERVER_URL environment variable not set")
-        query = self._format_query(patient_id)
         try:
-            async with httpx.AsyncClient() as client:
-                response = await client.get(url + query)
-            response.raise_for_status()
-            _response = json.loads(response.text)
+            fhir_server = di["fhir_server"]
         except:
-            logging.error("FHIR server not responding")
+            return "Sorry, I cannot find a FHIR server to search."
+        query = self._format_query(patient_id)
+        _url = query
+        try:
+            _response = await fhir_server.async_call_fhir_server(_url)
+        except:
             return "Sorry I cannot find the answer as the FHIR server is not responding."
         if _response["total"] >100:
-            logging.info("Patient record too large")
+            _logger.info("Patient record too large")
             return "Sorry, the patient's record is too large to be loaded."
         elif _response["total"] < 1:
-            logging.info("Patient record not found")
+            _logger.info("Patient record not found")
             return "This patient does not have a record."
         else:
             return _response

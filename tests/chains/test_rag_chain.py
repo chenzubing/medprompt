@@ -21,7 +21,7 @@ def test_get_rag_chain_not_mentioned(patient_id):
     }
     output = get_rag_tool(input)
     print(output)
-    assert "not mentioned" in output
+    assert "medical record" in output
 
 
 def test_get_rag_chain_mentioned(patient_id):

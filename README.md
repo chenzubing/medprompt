@@ -17,6 +17,19 @@
 ### An example *(Names correspond to the files in the repository)*
 [![Agent](https://github.com/dermatologist/medprompt/blob/develop/notes/agent.drawio.svg)](https://github.com/dermatologist/medprompt/blob/develop/notes/agent.drawio.svg)
 
+### Design principles (WIP)
+* **Decoupled** - Each component is independent of the other with dependencies injected.
+* **LLM agnostic** - Each component can use any LLM. LLM definitions are injected.
+* **No Permanent vector storage** - No permanent storage of vectors. Vectors are generated on the fly.
+* **Fail silently** - Each component should fail silently and log errors.
+* **Returns** - Each component should return a LLM friendly message.
+* **Modular** - Each component is a separate module that can be used independently.
+* **Extensible** - New tools, chains and agents can be added easily.
+* **Reusable** - Tools, chains and agents can be reused in different contexts.
+* **Testable** - Each component can be tested independently.
+* **Documented** - Each component is documented with examples.
+* **Open** - Open source and open to contributions.
+
 #### Disclaimer:
 *This repository is not associated with the [Medprompt method of prompting](https://arxiv.org/pdf/2311.16452.pdf). In this generic repository, [I](https://nuchange.ca) will be trying to implement the method using langchain abstractions. Get in touch to share your thoughts via [GitHub discussions](https://github.com/dermatologist/medprompt/discussions). Please submit a PR with a link to the official implementation if any.*
 
@@ -55,7 +68,6 @@ after cloning the repository
 pip install -e .[embedding]
 ```
 
-
 ### Using templates
 ```
 from medprompt import MedPrompter
@@ -72,9 +84,23 @@ print(messages)
 ```
 
 ### Using Tools and chains in an agent
+
+[FHIR Server base class](src/medprompt/utils/fhir_server.py)
+[Example Fhir Agent](src/medprompt/agents/fhir_agent.py)
+
 ```
-from medprompt.tools import FhirPatientSearchTool
-tools = [FhirPatientSearchTool()]
+from medprompt.tools import FhirPatientSearchTool, CreateEmbeddingFromFhirBundle, ConvertFhirToTextTool, GetMedicalRecordTool
+from medprompt.chains import get_rag_tool
+from src.medprompt.utils import HapiFhirServer
+from os import getenv
+
+# Dependency injection
+from kink import di
+di["fhir_server"] = HapiFhirServer()
+di["patient_id"] = getenv("PATIENT_ID", "592911")
+di["get_medical_record_tool"] = GetMedicalRecordTool()
+
+tools = [FhirPatientSearchTool(), CreateEmbeddingFromFhirBundle(), ConvertFhirToTextTool(), get_rag_tool]
 ```
 
 ### Using agents in LangServe
