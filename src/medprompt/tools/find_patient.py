@@ -41,6 +41,8 @@ class FhirPatientSearchTool(StructuredTool):
     """
     args_schema: Type[BaseModel] = SearchInput
 
+
+
     def _run(
             self,
             given: str = None,
@@ -67,7 +69,7 @@ class FhirPatientSearchTool(StructuredTool):
         try:
             _response = fhir_server.call_fhir_server(_url, params)
         except:
-            return "Sorry I cannot find the answer as the FHIR server is not responding or an implementation in not provided."
+            return "Sorry I cannot find the answer as the FHIR server is not responding"
         return self.process_response(_response)
 
     async def _arun(
@@ -78,6 +80,10 @@ class FhirPatientSearchTool(StructuredTool):
             patient_id: str = None,
             run_manager: Optional[AsyncCallbackManagerForToolRun] = None
             ) -> Any:
+        try:
+            fhir_server = di["fhir_server"]
+        except:
+            return "Sorry, I cannot find a FHIR server to search."
         params = {}
         if patient_id:
             params["_id"] = patient_id
@@ -90,7 +96,7 @@ class FhirPatientSearchTool(StructuredTool):
                 params["birthdate"] = birth_date
         _url = "/Patient"
         try:
-            _response = await super().async_call_fhir_server(_url, params)
+            _response = await fhir_server.async_call_fhir_server(_url, params)
         except:
             return "Sorry I cannot find the answer as the FHIR server is not responding or an implementation in not provided."
         return self.process_response(_response)
