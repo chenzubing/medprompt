@@ -21,7 +21,7 @@ from langchain.agents import AgentType, initialize_agent
 from langchain.load import loads
 from medprompt.tools.get_medical_record import GetMedicalRecordTool
 from medprompt.utils.hapi_server import HapiFhirServer
-from pydantic import BaseModel, Field
+from langchain_core.pydantic_v1 import BaseModel, Field, validator
 
 from .. import MedPrompter
 from ..chains import get_rag_tool

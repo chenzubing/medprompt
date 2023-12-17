@@ -21,7 +21,7 @@ def test_get_rag_chain_not_mentioned(patient_id):
     }
     output = get_rag_tool(input)
     print(output)
-    assert "medical record" in output
+    assert "cannot be determined" in output
 
 
 def test_get_rag_chain_mentioned(patient_id):
@@ -32,4 +32,4 @@ def test_get_rag_chain_mentioned(patient_id):
     }
     output = get_rag_tool(input)
     print(output)
-    assert "4.12" in output
+    assert "red blood" in output

@@ -1,6 +1,6 @@
 import os
 from langchain.load import loads
-from pydantic import BaseModel, Field
+from langchain_core.pydantic_v1 import BaseModel, Field, validator
 from .. import MedPrompter
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser

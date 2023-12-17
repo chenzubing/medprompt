@@ -9,10 +9,6 @@ from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 di["fhir_server"] = HapiFhirServer()
 di["patient_id"] = getenv("PATIENT_ID", "592911")
 di["get_medical_record_tool"] = GetMedicalRecordTool()
-di["rag_chain_main_llm"] = getenv("RAG_CHAIN_MAIN_LLM", "gpt4all-orca-mini-3b.txt")
-di["rag_chain_clinical_llm"] = getenv("RAG_CHAIN_CLINICAL_LLM", "gpt4all-orca-mini-3b.txt")
-# di["rag_chain_main_llm"] = getenv("RAG_CHAIN_MAIN_LLM", "text_bison_001_model_v1.txt")
-# di["rag_chain_clinical_llm"] = getenv("RAG_CHAIN_CLINICAL_LLM", "text_bison_001_model_v1.txt")
 
 di["model_name"] = getenv("MODEL_NAME", "text-bison@001")
 di["n"] = int(getenv("N", "1"))
@@ -42,3 +38,6 @@ di["gpt4al"] = lambda di: GPT4All(
     callbacks=[StreamingStdOutCallbackHandler()],
     verbose=True
 )
+
+di["rag_chain_main_llm"] = di["gpt4al"]
+di["rag_chain_clinical_llm"] = di["gpt4al"]

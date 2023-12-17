@@ -27,8 +27,7 @@ from langchain.schema.output_parser import StrOutputParser
 from langchain.schema.runnable import RunnableMap, RunnablePassthrough
 from langchain.tools import tool
 from langchain.vectorstores import Chroma, Redis, FAISS
-from pydantic import BaseModel, Field
-
+from langchain_core.pydantic_v1 import BaseModel, Field, validator
 from ..tools.create_embedding import CreateEmbeddingFromFhirBundle
 
 
@@ -62,15 +61,9 @@ REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
 embedding = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
 VECTORSTORE_NAME = os.getenv("VECTORSTORE_NAME", "faiss")
 
-# Load LLMs
-_main_llm = di["rag_chain_main_llm"]
-_clinical_llm = di["rag_chain_clinical_llm"]
-med_prompter.set_template(template_name=_main_llm)
-_llm_str = med_prompter.generate_prompt()
-main_llm = loads(_llm_str)
-med_prompter.set_template(template_name=_clinical_llm)
-_llm_str = med_prompter.generate_prompt()
-clinical_llm = loads(_llm_str)
+
+main_llm = di["rag_chain_main_llm"]
+clinical_llm = di["rag_chain_clinical_llm"]
 
 def check_index(input_object):
     patient_id = input_object["patient_id"]
@@ -142,7 +135,7 @@ def get_runnable(**kwargs):
         context=context,
         input=input,
     )
-    _chain = _inputs | ANSWER_PROMPT | main_llm | StrOutputParser()
+    _chain = _inputs | ANSWER_PROMPT | clinical_llm | StrOutputParser()
     chain = _chain.with_types(input_type=ChatHistory)
     return chain
 
