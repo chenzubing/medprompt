@@ -5,9 +5,23 @@ import gradio as gr
 from agency.agent import Agent, action
 from agency.schema import Message
 from agency.spaces.local_space import LocalSpace
-from medprompt.space.fhir_agent import SpaceFhirAgent
+# from medprompt.space.fhir_agent import SpaceFhirAgent
 
 
+class TestAgent(Agent):
+    @action
+    def say(self, content: str):
+        print(self.current_message())
+        self.send({
+          "to": self.current_message()["from"],
+          "action": {
+            "name": "say",
+            "args": {
+                "content": content,
+            }
+          }
+        })
+        return True
 class GradioUser(Agent):
     """
     Represents the Gradio user as an Agent and contains methods for integrating
@@ -170,7 +184,7 @@ class GradioUser(Agent):
 if __name__ == "__main__":
     # Run the demo
     space = LocalSpace()
-    space.add(SpaceFhirAgent, "SpaceFhirAgent")
+    space.add(TestAgent, "TestAgent")
     gradio_user: GradioUser = space.add_foreground(GradioUser, "User")
     # Launch the gradio app
     gradio_user.demo().launch(
