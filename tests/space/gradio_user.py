@@ -10,7 +10,7 @@ from agency.spaces.local_space import LocalSpace
 
 class TestAgent(Agent):
     @action
-    def say(self, content: str):
+    def say(self, content: str, chat_history: list = []):
         print(self.current_message())
         self.send({
           "to": self.current_message()["from"],
@@ -27,6 +27,9 @@ class GradioUser(Agent):
     Represents the Gradio user as an Agent and contains methods for integrating
     with the Chatbot component
     """
+
+    chat_history = []
+
     def __init__(self, id: str):
         super().__init__(id, receive_own_broadcasts=False)
 
@@ -41,6 +44,7 @@ class GradioUser(Agent):
         Sends a message as this user
         """
         message = self.__parse_input_message(text)
+        # self.send(message)
         self.send(message)
         return "", self.get_chatbot_messages()
 
@@ -66,6 +70,10 @@ class GradioUser(Agent):
         if message['from'] == self.id():
             return text, None
         else:
+            try:
+                self.chat_history.append(message['action']['args']['content'])
+            except:
+                pass
             return None, text
 
     def __parse_input_message(self, text) -> Message:
@@ -96,7 +104,8 @@ class GradioUser(Agent):
                 "action": {
                     "name": "say",
                     "args": {
-                        "content": text
+                        "content": text,
+                        "chat_history": self.chat_history,
                     }
                 }
             }
