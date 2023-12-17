@@ -1,0 +1,1 @@
+{"lc": 1, "type": "not_implemented", "id": ["langchain", "llms", "gpt4all", "GPT4All"], "repr": "GPT4All(verbose=True, callbacks=[<langchain_core.callbacks.streaming_stdout.StreamingStdOutCallbackHandler object at 0x7fedc70aa110>], model='models/orca-mini-3b-gguf2-q4_0.gguf', backend='gptj', client=<gpt4all.gpt4all.GPT4All object at 0x7feda4caf9a0>)"}
