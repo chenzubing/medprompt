@@ -70,10 +70,6 @@ class GradioUser(Agent):
         if message['from'] == self.id():
             return text, None
         else:
-            try:
-                self.chat_history.append(message['action']['args']['content'])
-            except:
-                pass
             return None, text
 
     def __parse_input_message(self, text) -> Message:
@@ -97,7 +93,22 @@ class GradioUser(Agent):
         """
         text = text.strip()
 
+        if "reset" in text:
+            self.chat_history = []
+            return {
+                "to": "*",
+                "action": {
+                    "name": "say",
+                    "args": {
+                        "content": "Chat history reset",
+                        "chat_history": self.chat_history,
+                    }
+                }
+            }
+
         if not text.startswith("/"):
+            # Append to chat history
+            self.chat_history.append(text)
             # assume it's a broadcasted "say"
             return {
                 "to": "*",
@@ -105,7 +116,7 @@ class GradioUser(Agent):
                     "name": "say",
                     "args": {
                         "content": text,
-                        "chat_history": self.chat_history,
+                        "chat_history": self.chat_history[:-1],
                     }
                 }
             }
