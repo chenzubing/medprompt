@@ -1,7 +1,7 @@
 import time
 from agency.spaces.local_space import LocalSpace
-from .gradio_user import GradioUser
-from src.medprompt.space.fhir_agent import SpaceFhirAgent
+from gradio_user import GradioUser
+from medprompt.space.fhir_agent import SpaceFhirAgent
 
 # Create the space instance
 with LocalSpace() as space:

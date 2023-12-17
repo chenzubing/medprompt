@@ -1,8 +1,11 @@
 import json
 import re
+import time
 import gradio as gr
 from agency.agent import Agent, action
 from agency.schema import Message
+from agency.spaces.local_space import LocalSpace
+from medprompt.space.fhir_agent import SpaceFhirAgent
 
 
 class GradioUser(Agent):
@@ -163,3 +166,23 @@ class GradioUser(Agent):
         # Queueing necessary for periodic events using `every`
         demo.queue()
         return demo
+
+if __name__ == "__main__":
+    # Run the demo
+    space = LocalSpace()
+    space.add(SpaceFhirAgent, "SpaceFhirAgent")
+    gradio_user: GradioUser = space.add_foreground(GradioUser, "User")
+    # Launch the gradio app
+    gradio_user.demo().launch(
+        server_name="0.0.0.0",
+        server_port=8080,
+        prevent_thread_lock=True,
+        quiet=False,
+    )
+
+    try:
+        # block here until Ctrl-C
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        pass
