@@ -34,17 +34,7 @@ class SearchInput(BaseModel):
     chat_history: List[str] = Field()
     input: str
 
-class _FhirPatientSearchTool(FhirPatientSearchTool, HapiFhirServer):
-    pass
 
-class _GetMedicalRecordTool(GetMedicalRecordTool, HapiFhirServer):
-    pass
-
-class _ConvertFhirToTextTool(ConvertFhirToTextTool, _GetMedicalRecordTool):
-    pass
-
-class _CreateEmbeddingFromFhirBundle(CreateEmbeddingFromFhirBundle, _GetMedicalRecordTool):
-    pass
 class FhirAgent:
     def __init__(
             self,
@@ -52,7 +42,7 @@ class FhirAgent:
             llm_model="text_bison_model_v1.txt",
             prefix="fhir_agent_prefix_v1.jinja",
             suffix="fhir_agent_suffix_v1.jinja",
-            tools: List = [_FhirPatientSearchTool(), _CreateEmbeddingFromFhirBundle(), _ConvertFhirToTextTool(), get_rag_tool],
+            tools: List = [FhirPatientSearchTool(), CreateEmbeddingFromFhirBundle(), ConvertFhirToTextTool(), get_rag_tool],
         ):
         self.med_prompter = MedPrompter()
         if ".txt" not in llm_model:
