@@ -19,7 +19,6 @@ import os
 from typing import List
 from kink import di
 from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.load import loads
 from langchain.prompts import ChatPromptTemplate
 from langchain.prompts.prompt import PromptTemplate
 from langchain.schema import format_document

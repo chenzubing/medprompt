@@ -18,11 +18,8 @@
 from typing import List, Tuple
 
 from langchain.agents import AgentType, initialize_agent
-from langchain.load import loads
-from medprompt.tools.get_medical_record import GetMedicalRecordTool
-from medprompt.utils.hapi_server import HapiFhirServer
 from langchain_core.pydantic_v1 import BaseModel, Field, validator
-
+from kink import di
 from .. import MedPrompter
 from ..chains import get_rag_tool
 from ..tools import (ConvertFhirToTextTool, CreateEmbeddingFromFhirBundle,
@@ -39,21 +36,16 @@ class FhirAgent:
     def __init__(
             self,
             template_path =None,
-            llm_model="text_bison_model_v1.txt",
             prefix="fhir_agent_prefix_v1.jinja",
             suffix="fhir_agent_suffix_v1.jinja",
             tools: List = [FhirPatientSearchTool(), CreateEmbeddingFromFhirBundle(), ConvertFhirToTextTool(), get_rag_tool],
         ):
-        self.med_prompter = MedPrompter()
-        if ".txt" not in llm_model:
-            llm_model = llm_model + ".txt"
-        self.med_prompter.set_template(template_path=template_path, template_name=llm_model)
-        self.llm_str = self.med_prompter.generate_prompt()
-        self.llm = loads(self.llm_str)
+        self.llm = di["fhir_agent_llm"]
         if ".jinja" not in prefix:
             prefix = prefix + ".jinja"
         if ".jinja" not in suffix:
             suffix = suffix + ".jinja"
+        self.med_prompter = MedPrompter()
         self.med_prompter.set_template(template_path=template_path, template_name=prefix)
         self.prefix = self.med_prompter.generate_prompt()
         self.med_prompter.set_template(template_path=template_path, template_name=suffix)

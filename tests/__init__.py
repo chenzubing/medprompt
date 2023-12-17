@@ -41,3 +41,4 @@ di["gpt4al"] = lambda di: GPT4All(
 
 di["rag_chain_main_llm"] = di["gpt4al"]
 di["rag_chain_clinical_llm"] = di["gpt4al"]
+di["fhir_agent_llm"] = di["gpt4al"]
