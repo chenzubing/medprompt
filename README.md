@@ -12,14 +12,14 @@
 * **Tools** are functions used by *agents* for getting things done. Example: [To find patient ID from name.](src/medprompt/tools/find_patient.py)
 * **Chains** are tools that use LLM calls to get things done. Example: [Answer a clinical question based on patient health record using RAG](src/medprompt/chains/rag_chain.py)
 * **Agents** uses an LLM to orchestrate Chains and Tools to acheive the overarching goal. Example: [Answer a doctors question related to a patient. Find patient, get health record, generate embedding and generate answer](src/medprompt/agents/fhir_agent.py)
-* **Space** is an [Agency](https://github.com/operand/agency) based abstraction for an environment for agents to communicate according to the [actor model](https://en.wikipedia.org/wiki/Actor_model).
+* **Space** is an [Agency](https://github.com/operand/agency) based abstraction for an environment for agents to communicate according to the [actor model](https://en.wikipedia.org/wiki/Actor_model). Example: [FHIR space](examples/example_space_gradio.py)
 
-### An example *(Names correspond to the files in the repository)*
+### Architecture *(Names correspond to the files in the repository)*
 [![Agent](https://github.com/dermatologist/medprompt/blob/develop/notes/agent.drawio.svg)](https://github.com/dermatologist/medprompt/blob/develop/notes/agent.drawio.svg)
 
 ### Design principles (WIP)
 * **Decoupled** - Each component is independent of the other with dependencies injected.
-* **LLM agnostic** - Each component can use any LLM. LLM definitions are injected.
+* **LLM agnostic** - Each component can use any LLM. [LLM definitions](src/medprompt/templates/text_bison_001_model_v1.txt) are injected.
 * **No Permanent vector storage** - No permanent storage of vectors. Vectors are generated on the fly.
 * **Fail silently** - Each component should fail silently and log errors.
 * **Returns** - Each component should return a LLM friendly message.
@@ -114,18 +114,9 @@ add_routes(
 )
 ```
 
-### Using Space
-```
-from src.medprompt.space.fhir_agent import SpaceFhirAgent
+### [Using Space](examples/example_space_gradio.py)
 
-# Create the space instance
-with LocalSpace() as space:
-
-    # Add a host agent to the space, exposing access to the host system
-    space.add(SpaceFhirAgent, "SpaceFhirAgent")
-```
-
-* [Example hosting using LangServe](/t_install.py)
+### [Hosting with LangServe](/t_install.py)
 
 ## Give us a star ⭐️
 If you find this project useful, give us a star. It helps others discover the project.

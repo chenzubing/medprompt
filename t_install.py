@@ -5,6 +5,14 @@ from medprompt.chains import get_runnable
 from medprompt.tools import FhirPatientSearchTool, ConvertFhirToTextTool
 from medprompt.agents import FhirAgent
 from fastapi.middleware.cors import CORSMiddleware
+from kink import di
+from os import getenv
+from src.medprompt.utils import HapiFhirServer
+from src.medprompt.tools import GetMedicalRecordTool
+
+di["fhir_server"] = HapiFhirServer()
+di["patient_id"] = getenv("PATIENT_ID", "592911")
+di["get_medical_record_tool"] = GetMedicalRecordTool()
 
 
 app = FastAPI(
