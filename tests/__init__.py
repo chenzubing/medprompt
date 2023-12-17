@@ -3,13 +3,14 @@ from os import getenv
 import os
 from src.medprompt.utils import HapiFhirServer
 from src.medprompt.tools import GetMedicalRecordTool
-from langchain.llms import VertexAI, GPT4All
+from langchain.llms import VertexAI, GPT4All, OpenAI, AzureOpenAI
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 
 di["fhir_server"] = HapiFhirServer()
 di["patient_id"] = getenv("PATIENT_ID", "592911")
 di["get_medical_record_tool"] = GetMedicalRecordTool()
 
+di["deployment_name"] = getenv("DEPLOYMENT_NAME", "text")
 di["model_name"] = getenv("MODEL_NAME", "text-bison@001")
 di["n"] = int(getenv("N", "1"))
 di["stop"] = getenv("STOP", None)
@@ -37,6 +38,16 @@ di["gpt4al"] = lambda di: GPT4All(
     backend="gptj",
     callbacks=[StreamingStdOutCallbackHandler()],
     verbose=True
+)
+
+di["openai"] = lambda di: OpenAI(
+    model=di["model_name"],
+    temperature=di["temperature"],
+)
+
+di["azure_openai"] = lambda di: AzureOpenAI(
+    deployment_name=di["deployment_name"],
+    model_name=di["model_name"],
 )
 
 di["rag_chain_main_llm"] = di["gpt4al"]
