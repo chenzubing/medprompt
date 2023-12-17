@@ -6,6 +6,8 @@ class SpaceFhirAgent(Agent):
     @action
     def say(self, content: str, chat_history: list = []):
         """Search for a patient in the FHIR database."""
+        #! Needs bootstrapping here (WIP)
+
         message = {
             "input": content,
             "chat_history": chat_history,
@@ -16,7 +18,7 @@ class SpaceFhirAgent(Agent):
           "action": {
             "name": "say",
             "args": {
-                "content": response_content,
+                "content": response_content["output"],
             }
           }
         })
