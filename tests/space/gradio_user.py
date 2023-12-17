@@ -91,12 +91,15 @@ class GradioUser(Agent):
         """
         Returns a single message as a tuple for the Chatbot component
         """
-        text = f"**{message['from']}:** "
-        if message['action']['name'] == 'say':
-            text += f"{message['action']['args']['content']}"
-        else:
-            text += f"\n```javascript\n{json.dumps(message, indent=2)}\n```"
-
+        text = ""
+        try:
+            text = f"**{message['from']}:** "
+            if message['action']['name'] == 'say':
+                text += f"{message['action']['args']['content']}"
+            else:
+                text += f"\n```javascript\n{json.dumps(message, indent=2)}\n```"
+        except:
+            pass
         if message['from'] == self.id():
             return text, None
         else:
