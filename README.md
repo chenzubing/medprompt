@@ -19,7 +19,7 @@
 
 ### Design principles (WIP)
 * **Decoupled** - Each component is independent of the other with dependencies injected.
-* **LLM agnostic** - Each component can use any LLM. [LLM definitions](src/medprompt/templates/text_bison_001_model_v1.txt) are injected.
+* **LLM agnostic** - Each component can use any LLM. LLMS are [injected into chains and agents](tests/__init__.py).
 * **No Permanent vector storage** - No permanent storage of vectors. Vectors are generated on the fly.
 * **Fail silently** - Each component should fail silently and log errors.
 * **Returns** - Each component should return a LLM friendly message.
