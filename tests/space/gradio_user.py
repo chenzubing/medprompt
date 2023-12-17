@@ -17,25 +17,23 @@ class SpaceFhirAgent(Agent):
         di["get_medical_record_tool"] = GetMedicalRecordTool()
         from medprompt.agents import FhirAgent
         di["fhir_agent"] = FhirAgent()
+        output = "Error in Fhir agent"
         try:
             fhir_agent = di["fhir_agent"]
+            message = {
+                "input": content,
+                "chat_history": chat_history,
+            }
+            response = fhir_agent.get_agent().invoke(message)
+            output = response["output"]
         except:
-            self.send({
-                "to": self.current_message()["from"],
-                "action": {
-                    "name": "say",
-                    "args": {
-                        "content": "Error in Fhir agent",
-                    }
-                }
-            })
-            return True
+            pass
         self.send({
           "to": self.current_message()["from"],
           "action": {
             "name": "say",
             "args": {
-                "content": "Fhir agent",
+                "content": output,
             }
           }
         })
@@ -49,7 +47,7 @@ class EchoAgent(Agent):
           "action": {
             "name": "say",
             "args": {
-                "content": content,
+                "content": content + " I am working on it",
             }
           }
         })
@@ -238,7 +236,7 @@ if __name__ == "__main__":
 
     space = LocalSpace()
     space.add(EchoAgent, "EchoAgent")
-    space.add(SpaceFhirAgent, "SpaceFhirAgent")
+    space.add(SpaceFhirAgent, "FhirAgent")
     gradio_user: GradioUser = space.add_foreground(GradioUser, "User")
     # Launch the gradio app
     gradio_user.demo().launch(
