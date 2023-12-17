@@ -3,7 +3,7 @@ from langchain.chains import LLMChain
 from langchain.llms import GPT4All
 from langchain.prompts import PromptTemplate
 
-from langchain.load import dumpd, dumps
+from langchain.load import loads, dumps
 
 
 template = """Question: {question}
@@ -28,9 +28,14 @@ llm = GPT4All(model=local_path, backend="gptj", callbacks=callbacks, verbose=Tru
 
 print(dumps(llm))
 
+llm_def = """
+{"lc": 1, "type": "constructor", "id": ["langchain", "llms", "gpt4all", "GPT4All"], "kwargs": {"model": "/home/beapen/repos/medprompt/models/orca-mini-3b-gguf2-q4_0.gguf", "backend":"gptj", "stop": null, "top_p": 0.8, "top_k": 40, "verbose": true}}
+"""
 
-# llm_chain = LLMChain(prompt=prompt, llm=llm)
+_llm = loads(llm_def)
 
-# question = "What NFL team won the Super Bowl in the year Justin Bieber was born?"
+llm_chain = LLMChain(prompt=prompt, llm=llm)
 
-# llm_chain.run(question)
+question = "What NFL team won the Super Bowl in the year Justin Bieber was born?"
+
+llm_chain.run(question)

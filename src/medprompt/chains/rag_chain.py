@@ -17,6 +17,7 @@
 
 import os
 from typing import List
+from kink import di
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.load import loads
 from langchain.prompts import ChatPromptTemplate
@@ -62,8 +63,8 @@ embedding = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
 VECTORSTORE_NAME = os.getenv("VECTORSTORE_NAME", "faiss")
 
 # Load LLMs
-_main_llm = os.getenv("MAIN_LLM", "text_bison_001_model_v1.txt")
-_clinical_llm = os.getenv("CLINICAL_LLM", "medpalm2_model_v1.txt")
+_main_llm = di["rag_chain_main_llm"]
+_clinical_llm = di["rag_chain_clinical_llm"]
 med_prompter.set_template(template_name=_main_llm)
 _llm_str = med_prompter.generate_prompt()
 main_llm = loads(_llm_str)
