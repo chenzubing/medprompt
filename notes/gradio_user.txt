@@ -5,37 +5,32 @@ import gradio as gr
 from agency.agent import Agent, action
 from agency.schema import Message
 from agency.spaces.local_space import LocalSpace
+from medprompt.agents import FhirAgent
 from kink import di
-# from medprompt.space.fhir_agent import SpaceFhirAgent
+import os
 from medprompt.utils import HapiFhirServer
+from medprompt.tools import GetMedicalRecordTool
+import logging
+from langchain.globals import set_verbose
+
 class SpaceFhirAgent(Agent):
+
     @action
     def say(self, content: str, chat_history: list = []):
-        di["patient_id"] = "592911"
-        di["fhir_server"] = HapiFhirServer()
-        from medprompt.tools import GetMedicalRecordTool
-        di["get_medical_record_tool"] = GetMedicalRecordTool()
-        from medprompt.agents import FhirAgent
-        di["fhir_agent"] = FhirAgent()
-        try:
-            fhir_agent = di["fhir_agent"]
-        except:
-            self.send({
-                "to": self.current_message()["from"],
-                "action": {
-                    "name": "say",
-                    "args": {
-                        "content": "Error in Fhir agent",
-                    }
-                }
-            })
-            return True
+        """Search for a patient in the FHIR database."""
+        message = {
+            "input": content,
+            "chat_history": chat_history,
+        }
+        response_content = {
+            "output": "Hello, world!",
+        }
         self.send({
-          "to": self.current_message()["from"],
+          "to": self.current_message()['from'],
           "action": {
             "name": "say",
             "args": {
-                "content": "Fhir agent",
+                "content": "Hello, world!",
             }
           }
         })
@@ -44,6 +39,7 @@ class SpaceFhirAgent(Agent):
 class EchoAgent(Agent):
     @action
     def say(self, content: str, chat_history: list = []):
+        # print(self.current_message())
         self.send({
           "to": self.current_message()["from"],
           "action": {
@@ -235,7 +231,9 @@ class GradioUser(Agent):
 
 if __name__ == "__main__":
     # Run the demo
-
+    # di["fhir_server"] = HapiFhirServer()
+    # di["get_medical_record_tool"] = GetMedicalRecordTool()
+    # di["patient_id"] = "592911"
     space = LocalSpace()
     space.add(EchoAgent, "EchoAgent")
     space.add(SpaceFhirAgent, "SpaceFhirAgent")
@@ -254,3 +252,20 @@ if __name__ == "__main__":
             time.sleep(1)
     except KeyboardInterrupt:
         pass
+
+    # patient_id = "592911"
+
+    # import os
+    # import sys
+    # f = open(os.devnull, 'w')
+    # old_stdout = sys.stdout
+    # sys.stdout = f
+    # input = {
+    #     "input": "What is the erythrocyte count of  patient " + patient_id + "?",
+    #     "chat_history": [""]
+    # }
+    # output = FhirAgent().get_agent().invoke(input)
+    # sys.stdout = old_stdout
+    # print(output["output"])
+    # assert output is not None
+
