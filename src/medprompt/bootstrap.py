@@ -58,10 +58,10 @@ def bootstrap():
         model_name=di["model_name"],
     )
 
-    di["rag_chain_main_llm"] = di["vertex_ai"]
-    di["rag_chain_clinical_llm"] = di["vertex_ai"]
-    di["fhir_agent_llm"] = di["vertex_ai"]
-    di["self_gen_cot_llm"] = di["vertex_ai"]
+    di["rag_chain_main_llm"] = di["gpt4all"]
+    di["rag_chain_clinical_llm"] = di["gpt4all"]
+    di["fhir_agent_llm"] = di["gpt4all"]
+    di["self_gen_cot_llm"] = di["gpt4all"]
 
     # Should be last
     from .tools import GetMedicalRecordTool
