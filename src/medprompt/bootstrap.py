@@ -15,6 +15,7 @@ def bootstrap():
     di["index_schema"] = getenv("INDEX_SCHEMA", "/tmp/redis_schema.yaml")
     di["redis_url"] = getenv("REDIS_URL", "redis://localhost:6379")
     di["vectorstore_name"] = getenv("VECTORSTORE_NAME", "faiss")
+    di["vectorstore_path"] = getenv("VECTORSTORE_PATH", "/tmp/vectorstore")
 
     di["deployment_name"] = getenv("DEPLOYMENT_NAME", "text")
     di["model_name"] = getenv("MODEL_NAME", "text-bison@001")

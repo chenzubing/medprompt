@@ -76,12 +76,12 @@ def check_index(input_object):
         elif VECTORSTORE_NAME == "chroma":
             create_embedding_tool = CreateEmbeddingFromFhirBundle()
             _ = create_embedding_tool.run(patient_id)
-            vectorstore = Chroma(collection_name=patient_id, persist_directory=os.getenv("CHROMA_DIR", "/tmp/chroma"), embedding_function=embedding)
+            vectorstore = Chroma(collection_name=patient_id, persist_directory=di["vectorstore_path"], embedding_function=embedding)
             vectorstore.persist()
         elif VECTORSTORE_NAME == "faiss":
             create_embedding_tool = CreateEmbeddingFromFhirBundle()
             _ = create_embedding_tool.run(patient_id)
-            fname = os.getenv("FAISS_DIR", "/tmp/faiss") + "/" + patient_id + ".index"
+            fname = di["vectorstore_path"] + "/" + patient_id + ".index"
             vectorstore = FAISS.load_local(fname, embeddings=embedding)
         else:
             return "No vector store defined."

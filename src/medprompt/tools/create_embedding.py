@@ -103,7 +103,7 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
             # Store in Chroma
             elif self.VECTORSTORE_NAME == "chroma":
                 db = Chroma.from_texts(
-                    persist_directory=os.getenv("CHROMA_DIR", "/tmp/chroma"),
+                    persist_directory=di["vectorstore_path"],
                     texts=[chunk["page_content"] for chunk in chunks],
                     metadatas=[chunk["metadata"] for chunk in chunks],
                     embedding=self.embedder,
@@ -113,7 +113,7 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
 
             # Store in FAISS
             elif self.VECTORSTORE_NAME == "faiss":
-                fname = os.getenv("FAISS_DIR", "/tmp/faiss") + "/" + patient_id + ".index"
+                fname = di["vectorstore_path"] + "/" + patient_id + ".index"
                 if not os.path.exists(fname):
                     db = FAISS.from_texts(
                         texts=[chunk["page_content"] for chunk in chunks],
