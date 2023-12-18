@@ -2,6 +2,7 @@ import sys
 
 from .med_prompt import MedPrompter
 from .helpers import *
+from .bootstrap import bootstrap
 
 from dotenv import load_dotenv
 
