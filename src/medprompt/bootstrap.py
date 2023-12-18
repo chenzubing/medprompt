@@ -60,3 +60,4 @@ def bootstrap():
     di["rag_chain_main_llm"] = di["gpt4al"]
     di["rag_chain_clinical_llm"] = di["gpt4al"]
     di["fhir_agent_llm"] = di["gpt4al"]
+    di["self_gen_cot_llm"] = di["gpt4al"]

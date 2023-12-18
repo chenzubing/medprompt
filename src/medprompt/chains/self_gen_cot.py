@@ -1,5 +1,4 @@
-import os
-from langchain.load import loads
+from kink import di
 from langchain_core.pydantic_v1 import BaseModel, Field, validator
 from .. import MedPrompter
 from langchain.schema.runnable import RunnablePassthrough
@@ -15,10 +14,8 @@ End the chain of though explanation with:
 Therefore, the answer is {{answer}}.
 """
 
-_self_gen_cot_llm = os.getenv("SELF_GEN_COT_LLM", "text_bison_001_model_v1.txt")
-med_prompter.set_template(template_name=_self_gen_cot_llm)
-_llm_str = med_prompter.generate_prompt()
-self_gen_cot_llm = loads(_llm_str)
+
+self_gen_cot_llm = di["self_gen_cot_llm"]
 
 class SelfGenCot(BaseModel):
     question: str = Field(..., title="Question", description="The question to generate a chain of thought for.")
