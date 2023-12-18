@@ -42,10 +42,6 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
     # Embedding model
     EMBED_MODEL = os.getenv("EMBED_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
 
-    # Redis Connection Information
-    REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
-    REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
-
     # Create vectorstore
     embedder = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
 
