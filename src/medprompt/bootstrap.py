@@ -11,6 +11,11 @@ def bootstrap():
     di["patient_id"] = getenv("PATIENT_ID", "592911")
     di["get_medical_record_tool"] = GetMedicalRecordTool()
 
+    di["embedding_model"] = getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
+    di["index_schema"] = getenv("INDEX_SCHEMA", "/tmp/redis_schema.yaml")
+    di["redis_url"] = getenv("REDIS_URL", "redis://localhost:6379")
+    di["vectorstore_name"] = getenv("VECTORSTORE_NAME", "faiss")
+
     di["deployment_name"] = getenv("DEPLOYMENT_NAME", "text")
     di["model_name"] = getenv("MODEL_NAME", "text-bison@001")
     di["n"] = int(getenv("N", "1"))

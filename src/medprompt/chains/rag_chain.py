@@ -54,11 +54,11 @@ Question:
 """
 ANSWER_PROMPT = ChatPromptTemplate.from_template(ANSWER_TEMPLATE)
 DEFAULT_DOCUMENT_PROMPT = PromptTemplate.from_template(template="{page_content}")
-EMBED_MODEL = os.getenv("EMBED_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
-INDEX_SCHEMA = os.getenv("INDEX_SCHEMA", "/tmp/redis_schema.yaml")
-REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
+EMBED_MODEL = di["embedding_model"]
+INDEX_SCHEMA = di["index_schema"]
+REDIS_URL = di["redis_url"]
 embedding = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
-VECTORSTORE_NAME = os.getenv("VECTORSTORE_NAME", "faiss")
+VECTORSTORE_NAME = di["vectorstore_name"]
 
 
 main_llm = di["rag_chain_main_llm"]

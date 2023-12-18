@@ -40,14 +40,15 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
     args_schema: Type[BaseModel] = SearchInput
 
     # Embedding model
-    EMBED_MODEL = os.getenv("EMBED_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
+    EMBED_MODEL = di["embedding_model"]
 
     # Create vectorstore
     embedder = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
 
     # Index schema
-    INDEX_SCHEMA = os.getenv("INDEX_SCHEMA", "/tmp/redis_schema.yaml")
-    VECTORSTORE_NAME = os.getenv("VECTORSTORE_NAME", "faiss")
+    INDEX_SCHEMA = di["index_schema"]
+    VECTORSTORE_NAME = di["vectorstore_name"]
+    REDIS_URL = di["redis_url"]
 
     def _run(
             self,
@@ -95,7 +96,7 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
                     embedding=self.embedder,
                     index_name=patient_id,
                     # index_schema=self.INDEX_SCHEMA,
-                    redis_url=os.getenv("REDIS_URL", "redis://localhost:6379")
+                    redis_url=self.REDIS_URL
                 )
                 db.write_schema(self.INDEX_SCHEMA)
 
