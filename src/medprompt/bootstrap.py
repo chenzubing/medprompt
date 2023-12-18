@@ -1,16 +1,10 @@
 from kink import di
 from os import getenv
 import os
-from .utils import HapiFhirServer
-from .tools import GetMedicalRecordTool
 from langchain.llms import VertexAI, GPT4All, OpenAI, AzureOpenAI
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 
 def bootstrap():
-    di["fhir_server"] = HapiFhirServer()
-    di["patient_id"] = getenv("PATIENT_ID", "592911")
-    di["get_medical_record_tool"] = GetMedicalRecordTool()
-
     di["embedding_model"] = getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
     di["index_schema"] = getenv("INDEX_SCHEMA", "/tmp/redis_schema.yaml")
     di["redis_url"] = getenv("REDIS_URL", "redis://localhost:6379")
@@ -61,3 +55,10 @@ def bootstrap():
     di["rag_chain_clinical_llm"] = di["gpt4al"]
     di["fhir_agent_llm"] = di["gpt4al"]
     di["self_gen_cot_llm"] = di["gpt4al"]
+
+    # Should be last
+    from .utils import HapiFhirServer
+    from .tools import GetMedicalRecordTool
+    di["fhir_server"] = HapiFhirServer()
+    di["patient_id"] = getenv("PATIENT_ID", "592911")
+    di["get_medical_record_tool"] = GetMedicalRecordTool()

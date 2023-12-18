@@ -6,7 +6,7 @@ class SpaceFhirAgent(Agent):
     @action
     def say(self, content: str, chat_history: list = []):
         """Search for a patient in the FHIR database."""
-        #! Needs bootstrapping here (WIP)
+        #! TODO: Needs bootstrapping here.
 
         message = {
             "input": content,
