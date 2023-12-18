@@ -85,9 +85,6 @@ print(messages)
 
 ### Using Tools and chains in an agent
 
-[FHIR Server base class](src/medprompt/utils/fhir_server.py)
-[Example Fhir Agent](src/medprompt/agents/fhir_agent.py)
-
 ```
 from medprompt.tools import FhirPatientSearchTool, CreateEmbeddingFromFhirBundle, ConvertFhirToTextTool, GetMedicalRecordTool
 from medprompt.chains import get_rag_tool
