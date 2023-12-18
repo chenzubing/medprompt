@@ -1,0 +1,1 @@
+{"lc": 1, "type": "constructor", "id": ["langchain", "llms", "gpt4all", "GPT4All"], "kwargs": {"model": "/home/beapen/repos/medprompt/models/orca-mini-3b-gguf2-q4_0.gguf", "n": 1, "stop": null, "max_output_tokens": 1024, "temperature": 0.1, "top_p": 0.8, "top_k": 40, "verbose": true}}

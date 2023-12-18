@@ -40,18 +40,15 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
     args_schema: Type[BaseModel] = SearchInput
 
     # Embedding model
-    EMBED_MODEL = os.getenv("EMBED_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
-
-    # Redis Connection Information
-    REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
-    REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
+    EMBED_MODEL = di["embedding_model"]
 
     # Create vectorstore
     embedder = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
 
     # Index schema
-    INDEX_SCHEMA = os.getenv("INDEX_SCHEMA", "/tmp/redis_schema.yaml")
-    VECTORSTORE_NAME = os.getenv("VECTORSTORE_NAME", "faiss")
+    INDEX_SCHEMA = di["index_schema"]
+    VECTORSTORE_NAME = di["vectorstore_name"]
+    REDIS_URL = di["redis_url"]
 
     def _run(
             self,
@@ -99,14 +96,14 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
                     embedding=self.embedder,
                     index_name=patient_id,
                     # index_schema=self.INDEX_SCHEMA,
-                    redis_url=os.getenv("REDIS_URL", "redis://localhost:6379")
+                    redis_url=self.REDIS_URL
                 )
                 db.write_schema(self.INDEX_SCHEMA)
 
             # Store in Chroma
             elif self.VECTORSTORE_NAME == "chroma":
                 db = Chroma.from_texts(
-                    persist_directory=os.getenv("CHROMA_DIR", "/tmp/chroma"),
+                    persist_directory=di["vectorstore_path"],
                     texts=[chunk["page_content"] for chunk in chunks],
                     metadatas=[chunk["metadata"] for chunk in chunks],
                     embedding=self.embedder,
@@ -116,7 +113,7 @@ class CreateEmbeddingFromFhirBundle(BaseTool):
 
             # Store in FAISS
             elif self.VECTORSTORE_NAME == "faiss":
-                fname = os.getenv("FAISS_DIR", "/tmp/faiss") + "/" + patient_id + ".index"
+                fname = di["vectorstore_path"] + "/" + patient_id + ".index"
                 if not os.path.exists(fname):
                     db = FAISS.from_texts(
                         texts=[chunk["page_content"] for chunk in chunks],

@@ -17,8 +17,8 @@
 
 import os
 from typing import List
+from kink import di
 from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.load import loads
 from langchain.prompts import ChatPromptTemplate
 from langchain.prompts.prompt import PromptTemplate
 from langchain.schema import format_document
@@ -26,8 +26,7 @@ from langchain.schema.output_parser import StrOutputParser
 from langchain.schema.runnable import RunnableMap, RunnablePassthrough
 from langchain.tools import tool
 from langchain.vectorstores import Chroma, Redis, FAISS
-from pydantic import BaseModel, Field
-
+from langchain_core.pydantic_v1 import BaseModel, Field, validator
 from ..tools.create_embedding import CreateEmbeddingFromFhirBundle
 
 
@@ -55,21 +54,15 @@ Question:
 """
 ANSWER_PROMPT = ChatPromptTemplate.from_template(ANSWER_TEMPLATE)
 DEFAULT_DOCUMENT_PROMPT = PromptTemplate.from_template(template="{page_content}")
-EMBED_MODEL = os.getenv("EMBED_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
-INDEX_SCHEMA = os.getenv("INDEX_SCHEMA", "/tmp/redis_schema.yaml")
-REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
+EMBED_MODEL = di["embedding_model"]
+INDEX_SCHEMA = di["index_schema"]
+REDIS_URL = di["redis_url"]
 embedding = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
-VECTORSTORE_NAME = os.getenv("VECTORSTORE_NAME", "faiss")
+VECTORSTORE_NAME = di["vectorstore_name"]
 
-# Load LLMs
-_main_llm = os.getenv("MAIN_LLM", "text_bison_001_model_v1.txt")
-_clinical_llm = os.getenv("CLINICAL_LLM", "medpalm2_model_v1.txt")
-med_prompter.set_template(template_name=_main_llm)
-_llm_str = med_prompter.generate_prompt()
-main_llm = loads(_llm_str)
-med_prompter.set_template(template_name=_clinical_llm)
-_llm_str = med_prompter.generate_prompt()
-clinical_llm = loads(_llm_str)
+
+main_llm = di["rag_chain_main_llm"]
+clinical_llm = di["rag_chain_clinical_llm"]
 
 def check_index(input_object):
     patient_id = input_object["patient_id"]
@@ -83,12 +76,12 @@ def check_index(input_object):
         elif VECTORSTORE_NAME == "chroma":
             create_embedding_tool = CreateEmbeddingFromFhirBundle()
             _ = create_embedding_tool.run(patient_id)
-            vectorstore = Chroma(collection_name=patient_id, persist_directory=os.getenv("CHROMA_DIR", "/tmp/chroma"), embedding_function=embedding)
+            vectorstore = Chroma(collection_name=patient_id, persist_directory=di["vectorstore_path"], embedding_function=embedding)
             vectorstore.persist()
         elif VECTORSTORE_NAME == "faiss":
             create_embedding_tool = CreateEmbeddingFromFhirBundle()
             _ = create_embedding_tool.run(patient_id)
-            fname = os.getenv("FAISS_DIR", "/tmp/faiss") + "/" + patient_id + ".index"
+            fname = di["vectorstore_path"] + "/" + patient_id + ".index"
             vectorstore = FAISS.load_local(fname, embeddings=embedding)
         else:
             return "No vector store defined."
@@ -141,7 +134,7 @@ def get_runnable(**kwargs):
         context=context,
         input=input,
     )
-    _chain = _inputs | ANSWER_PROMPT | main_llm | StrOutputParser()
+    _chain = _inputs | ANSWER_PROMPT | clinical_llm | StrOutputParser()
     chain = _chain.with_types(input_type=ChatHistory)
     return chain
 
