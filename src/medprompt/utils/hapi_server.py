@@ -2,17 +2,17 @@ import httpx
 import json
 import logging
 import os
+
+from .fhir_server import FhirServer
 _logger = logging.getLogger(__name__)
 
-class HapiFhirServer:
+class HapiFhirServer(FhirServer):
     """
     A class for calling the FHIR server.
     Inherit from this class and override the call_fhir_server and async_call_fhir_server methods.
     """
 
-
-    @staticmethod
-    def call_fhir_server(url, params=None):
+    def call_fhir_server(self, url, params=None):
         """
         Calls the FHIR server with the provided URL and parameters.
 
@@ -33,8 +33,7 @@ class HapiFhirServer:
             return "Sorry I cannot find the answer as the FHIR server is not responding."
         return _response
 
-    @staticmethod
-    async def async_call_fhir_server(url, params=None):
+    async def async_call_fhir_server(self, url, params=None):
         """
         Asynchronously calls the FHIR server with the provided URL and parameters.
 

@@ -1,7 +1,10 @@
-class FhirServer:
+from abc import ABC, abstractmethod
 
-    @staticmethod
-    def call_fhir_server(url, params=None):
+
+class FhirServer(ABC):
+
+    @abstractmethod
+    def call_fhir_server(self, url, params=None):
         """
         Calls the FHIR server with the provided URL and parameters.
 
@@ -14,8 +17,8 @@ class FhirServer:
         """
         pass
 
-    @staticmethod
-    async def async_call_fhir_server(url, params=None):
+    @abstractmethod
+    async def async_call_fhir_server(self, url, params=None):
         """
         Asynchronously calls the FHIR server with the provided URL and parameters.
 
