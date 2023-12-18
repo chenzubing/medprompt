@@ -1,8 +1,10 @@
-from kink import di
-from os import getenv
 import os
-from langchain.llms import VertexAI, GPT4All, OpenAI, AzureOpenAI
+from os import getenv
+
+from kink import di
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+from langchain.llms import AzureOpenAI, GPT4All, OpenAI, VertexAI
+
 
 def bootstrap():
     di["embedding_model"] = getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
@@ -32,14 +34,19 @@ def bootstrap():
         verbose=di["verbose"],
     )
 
-    di["gpt4all_model_path"] = getenv("GPT4ALL_MODEL_PATH", os.getcwd() + "/models/orca-mini-3b-gguf2-q4_0.gguf")
+    MODEL_PATH = getenv("GPT4ALL_MODEL_PATH", os.getcwd() + "/models/orca-mini-3b-gguf2-q4_0.gguf")
+    isExist = os.path.exists(MODEL_PATH)
+    if isExist:
+        di["gpt4all_model_path"] = MODEL_PATH
 
-    di["gpt4al"] = lambda di: GPT4All(
-        model=di["gpt4all_model_path"],
-        backend="gptj",
-        callbacks=[StreamingStdOutCallbackHandler()],
-        verbose=True
-    )
+        di["gpt4all"] = lambda di: GPT4All(
+            model=di["gpt4all_model_path"],
+            backend="gptj",
+            callbacks=[StreamingStdOutCallbackHandler()],
+            verbose=True
+        )
+    else:
+        di["gpt4all"] = None
 
     di["openai"] = lambda di: OpenAI(
         model=di["model_name"],
@@ -51,14 +58,14 @@ def bootstrap():
         model_name=di["model_name"],
     )
 
-    di["rag_chain_main_llm"] = di["gpt4al"]
-    di["rag_chain_clinical_llm"] = di["gpt4al"]
-    di["fhir_agent_llm"] = di["gpt4al"]
-    di["self_gen_cot_llm"] = di["gpt4al"]
+    di["rag_chain_main_llm"] = di["gpt4all"]
+    di["rag_chain_clinical_llm"] = di["gpt4all"]
+    di["fhir_agent_llm"] = di["gpt4all"]
+    di["self_gen_cot_llm"] = di["gpt4all"]
 
     # Should be last
-    from .utils import HapiFhirServer
     from .tools import GetMedicalRecordTool
+    from .utils import HapiFhirServer
     di["fhir_server"] = HapiFhirServer()
     di["patient_id"] = getenv("PATIENT_ID", "592911")
     di["get_medical_record_tool"] = GetMedicalRecordTool()
