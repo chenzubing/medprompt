@@ -63,7 +63,7 @@ class FhirAgent:
             llm=self.llm,
             agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,
             stop=["\nObservation:"],
-            max_iterations=len(self.tools),
+            max_iterations=len(self.tools) + 3,
             handle_parsing_errors=True,
             agent_kwargs=self.agent_kwargs,
             verbose=True).with_types(input_type=SearchInput)
