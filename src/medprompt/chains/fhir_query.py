@@ -11,12 +11,13 @@ med_prompter = MedPrompter()
 med_prompter.set_template(template_name='fhir_rails_v1.xml')
 
 rail_spec = med_prompter.generate_prompt()
+
 fhir_query_llm = di["fhir_query_llm"]
 output_parser = GuardrailsOutputParser.from_rail_string(rail_spec, api=fhir_query_llm)
 
 FHIR_QUERY_PROMPT = PromptTemplate(
     template=output_parser.guard.prompt.escape(),
-    input_variables=output_parser.guard.prompt.variable_names,
+    input_variables=["question"],
 )
 
 class FhirQueryPrompt(BaseModel):
