@@ -62,6 +62,7 @@ def bootstrap():
     di["rag_chain_clinical_llm"] = di["vertex_ai"]
     di["fhir_agent_llm"] = di["vertex_ai"]
     di["self_gen_cot_llm"] = di["vertex_ai"]
+    di["fhir_query_llm"] = di["vertex_ai"]
 
     # Should be last
     from .tools import GetMedicalRecordTool
