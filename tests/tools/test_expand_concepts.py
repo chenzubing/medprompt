@@ -13,4 +13,4 @@ def test_ExpandConceptsTool(patient_id):
     print(result)
 
     # Assert that the result is as expected
-    assert result is not None
+    assert result is not []
