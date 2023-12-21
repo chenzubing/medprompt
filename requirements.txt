@@ -50,10 +50,16 @@ eliot==1.15.0
     #   guardrails-ai
 eliot-tree==21.0.0
     # via guardrails-ai
+filelock==3.13.1
+    # via huggingface-hub
 frozenlist==1.4.1
     # via
     #   aiohttp
     #   aiosignal
+fsspec==2023.12.2
+    # via huggingface-hub
+gensim==4.3.2
+    # via medprompt (setup.py)
 greenlet==3.0.2
     # via sqlalchemy
 griffe==0.36.9
@@ -68,6 +74,8 @@ httpx==0.26.0
     # via
     #   medprompt (setup.py)
     #   openai
+huggingface-hub==0.20.1
+    # via medprompt (setup.py)
 idna==3.6
     # via
     #   anyio
@@ -92,11 +100,11 @@ langchain==0.0.350
     # via medprompt (setup.py)
 langchain-community==0.0.5
     # via langchain
-langchain-core==0.1.2
+langchain-core==0.1.3
     # via
     #   langchain
     #   langchain-community
-langsmith==0.0.72
+langsmith==0.0.73
     # via
     #   langchain
     #   langchain-community
@@ -119,14 +127,17 @@ mypy-extensions==1.0.0
     # via typing-inspect
 numpy==1.26.2
     # via
+    #   gensim
     #   langchain
     #   langchain-community
+    #   scipy
 openai==1.6.0
     # via guardrails-ai
 orjson==3.9.10
     # via eliot
 packaging==23.2
     # via
+    #   huggingface-hub
     #   langchain-core
     #   marshmallow
 pycparser==2.21
@@ -154,6 +165,7 @@ python-dotenv==1.0.0
     # via medprompt (setup.py)
 pyyaml==6.0.1
     # via
+    #   huggingface-hub
     #   langchain
     #   langchain-community
     #   langchain-core
@@ -163,6 +175,7 @@ regex==2023.10.3
     #   tiktoken
 requests==2.31.0
     # via
+    #   huggingface-hub
     #   langchain
     #   langchain-community
     #   langchain-core
@@ -172,11 +185,15 @@ rich==13.7.0
     # via guardrails-ai
 rstr==3.2.2
     # via guardrails-ai
+scipy==1.11.4
+    # via gensim
 six==1.16.0
     # via
     #   eliot
     #   eliot-tree
     #   python-dateutil
+smart-open==6.4.0
+    # via gensim
 sniffio==1.3.0
     # via
     #   anyio
@@ -199,12 +216,15 @@ tiktoken==0.5.2
 toolz==0.12.0
     # via eliot-tree
 tqdm==4.66.1
-    # via openai
+    # via
+    #   huggingface-hub
+    #   openai
 typer==0.9.0
     # via guardrails-ai
 typing-extensions==4.9.0
     # via
     #   guardrails-ai
+    #   huggingface-hub
     #   kink
     #   openai
     #   pydantic
