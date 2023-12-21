@@ -23,7 +23,7 @@ from langchain.schema.runnable import RunnableMap, RunnablePassthrough
 from langchain.tools import tool
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain.output_parsers import GuardrailsOutputParser
-from langchain.tools import ExpandConceptsTool
+from ..tools import ExpandConceptsTool
 
 from .. import MedPrompter
 med_prompter = MedPrompter()
@@ -81,8 +81,7 @@ def get_runnable(**kwargs):
     )
     _inputs = RunnableMap(
         clinical_concepts=list_of_concepts,
-        clinical_document=input["clinical_document"],
-        word_count=input["word_count"],
+        input=input,
     )
     _chain = _inputs | CLINICAL_CONCEPT_SUMMARY_PROMPT | main_llm | StrOutputParser()
     chain = _chain.with_types(input_type=ClinicalConceptInput)
