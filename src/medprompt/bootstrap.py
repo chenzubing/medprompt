@@ -13,6 +13,10 @@ def bootstrap():
     di["vectorstore_name"] = getenv("VECTORSTORE_NAME", "faiss")
     di["vectorstore_path"] = getenv("VECTORSTORE_PATH", "/tmp/vectorstore")
 
+    di["expand_conceps_repo_id"] = getenv("EXPAND_CONCEPTS_REPO_ID", "garyw/clinical-embeddings-100d-w2v-cr")
+    di["expand_concepts_filename"] = getenv("EXPAND_CONCEPTS_FILENAME", "w2v_OA_CR_100d.bin")
+    di["expand_concepts_threshold"] = float(getenv("EXPAND_CONCEPTS_THRESHOLD", "0.75"))
+
     di["deployment_name"] = getenv("DEPLOYMENT_NAME", "text")
     di["model_name"] = getenv("MODEL_NAME", "text-bison@001")
     di["n"] = int(getenv("N", "1"))
@@ -58,10 +62,11 @@ def bootstrap():
         model_name=di["model_name"],
     )
 
-    di["rag_chain_main_llm"] = di["gpt4all"]
-    di["rag_chain_clinical_llm"] = di["gpt4all"]
-    di["fhir_agent_llm"] = di["gpt4all"]
-    di["self_gen_cot_llm"] = di["gpt4all"]
+    di["rag_chain_main_llm"] = di["vertex_ai"]
+    di["rag_chain_clinical_llm"] = di["vertex_ai"]
+    di["fhir_agent_llm"] = di["vertex_ai"]
+    di["self_gen_cot_llm"] = di["vertex_ai"]
+    di["fhir_query_llm"] = di["vertex_ai"]
 
     # Should be last
     from .tools import GetMedicalRecordTool

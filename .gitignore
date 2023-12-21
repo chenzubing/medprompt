@@ -22,7 +22,8 @@ __pycache__/*
 .pydevproject
 .settings
 .idea
-.vscode
+.vscode/*
+!.vscode/launch.json
 tags
 
 # Package files

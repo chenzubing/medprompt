@@ -1,4 +1,6 @@
 import os
+from src.medprompt import bootstrap
+bootstrap()
 from fastapi import FastAPI
 from langserve import add_routes
 from medprompt.chains import get_runnable
@@ -9,8 +11,7 @@ from kink import di
 from os import getenv
 from src.medprompt.utils import HapiFhirServer
 from src.medprompt.tools import GetMedicalRecordTool
-from src.medprompt import bootstrap
-bootstrap()
+
 
 app = FastAPI(
   title="Healthcare Tools, Chains and Agents Server",
