@@ -63,4 +63,4 @@ class ExpandConceptsTool(BaseTool):  # StructuredTool if more than one input typ
             concepts: List[str] = None,
             run_manager: Optional[AsyncCallbackManagerForToolRun] = None
             ) -> Any:
-        raise NotImplementedError()
+        return self._run(concepts, run_manager)
