@@ -6,6 +6,11 @@ from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.llms import AzureOpenAI, GPT4All, OpenAI, VertexAI
 
 
+def is_on_github_actions():
+    if "CI" not in os.environ or not os.environ["CI"] or "GITHUB_RUN_ID" not in os.environ:
+        return False
+    return True
+
 def bootstrap():
     di["embedding_model"] = getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
     di["index_schema"] = getenv("INDEX_SCHEMA", "/tmp/redis_schema.yaml")
@@ -62,11 +67,18 @@ def bootstrap():
         model_name=di["model_name"],
     )
 
-    di["rag_chain_main_llm"] = di["vertex_ai"]
-    di["rag_chain_clinical_llm"] = di["vertex_ai"]
-    di["fhir_agent_llm"] = di["vertex_ai"]
-    di["self_gen_cot_llm"] = di["vertex_ai"]
-    di["fhir_query_llm"] = di["vertex_ai"]
+    if is_on_github_actions():
+        di["rag_chain_main_llm"] = di["gpt4all"]
+        di["rag_chain_clinical_llm"] = di["gpt4all"]
+        di["fhir_agent_llm"] = di["gpt4all"]
+        di["self_gen_cot_llm"] = di["gpt4all"]
+        di["fhir_query_llm"] = di["gpt4all"]
+    else:
+        di["rag_chain_main_llm"] = di["vertex_ai"]
+        di["rag_chain_clinical_llm"] = di["vertex_ai"]
+        di["fhir_agent_llm"] = di["vertex_ai"]
+        di["self_gen_cot_llm"] = di["vertex_ai"]
+        di["fhir_query_llm"] = di["vertex_ai"]
 
     # Should be last
     from .tools import GetMedicalRecordTool
