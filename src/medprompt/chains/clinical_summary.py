@@ -27,12 +27,14 @@ from ..tools import ExpandConceptsTool
 
 from .. import MedPrompter
 med_prompter = MedPrompter()
-
+import logging
+_logger = logging.getLogger(__name__)
 class ClinicalConceptOutput(BaseModel):
-    clinical_concepts: List[str] = Field(default=[])
+    clinical_concepts: List[str] = Field()
 
 class ClinicalConceptInput(BaseModel):
-    clinical_document: str = Field(default="")
+    clinical_document: str = Field()
+    word_count: str = Field()
 
 CLINICAL_CONCEPT_INPUT_TEMPLATE = """
 Given the following clinical document, extract the clinical concepts and return them as a list.
@@ -56,15 +58,15 @@ CLINICAL_CONCEPT_INPUT_PROMPT = PromptTemplate(
 )
 
 CLINICAL_CONCEPT_SUMMARY_TEMPLATE = """
-Given the following clinical concepts, summarize them into a single paragraph of ${word_count} words.
-Include comments on these ${clinical_concepts}.
+Given the following clinical concepts, summarize them into a single paragraph of ${input.word_count} words.
+Include comments on these ${input.clinical_concepts}.
 
-Clinical Document: ${clinical_document}
+Clinical Document: ${input.clinical_document}
 """
 
 CLINICAL_CONCEPT_SUMMARY_PROMPT = PromptTemplate(
     template=CLINICAL_CONCEPT_SUMMARY_TEMPLATE,
-    input_variables=["clinical_document", "clinical_concepts", "word_count"],
+    input_variables=["input"],
 )
 
 main_llm = di["rag_chain_main_llm"]
