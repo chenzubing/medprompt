@@ -83,25 +83,24 @@ CLINICAL_CONCEPT_INPUT_PROMPT = PromptTemplate(
     input_variables=["clinical_document"],
 )
 
-# CLINICAL_CONCEPT_SUMMARY_TEMPLATE = """
-# Given the following clinical concepts, summarize them into a single paragraph of ${input.word_count} words.
-# Include comments on these ${input.clinical_concepts}.
+CLINICAL_CONCEPT_SUMMARY_TEMPLATE = """
+Given the following clinical concepts, summarize them into a single paragraph of ${input.word_count} words.
+Include comments on these ${clinical_concepts}.
 
-# Clinical Document: ${input.clinical_document}
-# """
+Clinical Document: ${input.clinical_document}
+"""
 
-# CLINICAL_CONCEPT_SUMMARY_PROMPT = PromptTemplate(
-#     template=CLINICAL_CONCEPT_SUMMARY_TEMPLATE,
-#     input_variables=["input"],
-# )
+CLINICAL_CONCEPT_SUMMARY_PROMPT = PromptTemplate(
+    template=CLINICAL_CONCEPT_SUMMARY_TEMPLATE,
+    input_variables=["input"],
+)
 
 
 def extract_concepts(guardrails_output):
     """Extract the concepts from the clinical document."""
     _gr = json.loads(guardrails_output)
     return _gr["response"]
-    # concepts = _gr["response"]["concepts"]
-    # return concepts
+
 
 
 def get_runnable(**kwargs):
@@ -109,17 +108,16 @@ def get_runnable(**kwargs):
     list_of_concepts = RunnablePassthrough.assign(
         clinical_document=lambda x: x["clinical_document"],
     ) | CLINICAL_CONCEPT_INPUT_PROMPT | main_llm | StrOutputParser() | extract_concepts |  ExpandConceptsTool().run
-    # input = RunnablePassthrough.assign(
-    #     clinical_document=lambda x: x["clinical_document"],
-    #     word_count=lambda x: x["word_count"],
-    # )
-    # _inputs = RunnableMap(
-    #     clinical_concepts=list_of_concepts,
-    #     input=input,
-    # )
-    # _chain = _inputs | CLINICAL_CONCEPT_SUMMARY_PROMPT | main_llm | StrOutputParser()
-    # chain = _chain.with_types(input_type=ClinicalConceptInput)
-    chain = list_of_concepts
+    input = RunnablePassthrough.assign(
+        clinical_document=lambda x: x["clinical_document"],
+        word_count=lambda x: x["word_count"],
+    )
+    _inputs = RunnableMap(
+        clinical_concepts=list_of_concepts,
+        input=input,
+    )
+    _chain = _inputs | CLINICAL_CONCEPT_SUMMARY_PROMPT | main_llm | StrOutputParser()
+    chain = _chain.with_types(input_type=ClinicalConceptInput)
     return chain
 
 @tool("clinical summary", args_schema=ClinicalConceptInput)
