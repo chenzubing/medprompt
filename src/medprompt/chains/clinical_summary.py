@@ -50,18 +50,10 @@ rail_spec = """
 
 <prompt>
 
-Given the following clinical document, extract all the clinical concepts and return them as a list.
-If concepts are repeated, return them only once.
-If concepts have two words, return them as a single word joined by an underscore.
-The clinical concepts include the following:
-- Problem
-- Medication
-- Procedure
-- Lab
-- Vital
-- Medication
+Given the following clinical document, extract the single main clinical concept and return it as a single item list.
+If the concept has two words, return them as a single word joined by an underscore.
 
-Clinical Document: ${clinical_document}
+Clinical document: ${clinical_document}
 ${gr.complete_json_suffix_v2}
 
 </prompt>
@@ -84,15 +76,14 @@ CLINICAL_CONCEPT_INPUT_PROMPT = PromptTemplate(
 )
 
 CLINICAL_CONCEPT_SUMMARY_TEMPLATE = """
-Given the following clinical concepts, summarize them into a single paragraph of ${{ input.word_count }} words.
-Include comments on these ${clinical_concepts}.
+You are summarizing the clinical document below. These {clinical_concepts} may be included in the summary.
 
-Clinical Document: ${{ input.clinical_document }}
-"""
+Clinical Document: {clinical_document}.
+Summary:"""
 
 CLINICAL_CONCEPT_SUMMARY_PROMPT = PromptTemplate(
     template=CLINICAL_CONCEPT_SUMMARY_TEMPLATE,
-    input_variables=["clinical_concepts", "input"],
+    input_variables=["clinical_concepts", "clinical_document"],
 )
 
 
@@ -101,20 +92,23 @@ def extract_concepts(guardrails_output):
     _gr = json.loads(guardrails_output)
     return _gr["response"]
 
+def concat_concepts(concepts: List[str]):
+    """Concatenate the concepts."""
+    return " ".join(concepts)
+
 
 
 def get_runnable(**kwargs):
     """Get the runnable chain."""
     list_of_concepts = RunnablePassthrough.assign(
         clinical_document=lambda x: x["clinical_document"],
-    ) | CLINICAL_CONCEPT_INPUT_PROMPT | main_llm | StrOutputParser() | extract_concepts |  ExpandConceptsTool().run
-    input = RunnablePassthrough.assign(
-        clinical_document=lambda x: x["clinical_document"],
-        word_count=lambda x: x["word_count"],
+    ) | CLINICAL_CONCEPT_INPUT_PROMPT | main_llm | StrOutputParser() | extract_concepts |  ExpandConceptsTool().run | concat_concepts
+    clinical_document = RunnablePassthrough.assign(
+        clinical_document = lambda x: x["clinical_document"] + "\n" + "Summarize to " + x["word_count"] + " words. Summary: ",
     )
     _inputs = RunnableMap(
         clinical_concepts=list_of_concepts,
-        input=input,
+        clinical_document=clinical_document,
     )
     _chain = _inputs | CLINICAL_CONCEPT_SUMMARY_PROMPT | main_llm | StrOutputParser()
     chain = _chain.with_types(input_type=ClinicalConceptInput)
