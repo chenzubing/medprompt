@@ -84,15 +84,15 @@ CLINICAL_CONCEPT_INPUT_PROMPT = PromptTemplate(
 )
 
 CLINICAL_CONCEPT_SUMMARY_TEMPLATE = """
-Given the following clinical concepts, summarize them into a single paragraph of ${input.word_count} words.
+Given the following clinical concepts, summarize them into a single paragraph of ${{ input.word_count }} words.
 Include comments on these ${clinical_concepts}.
 
-Clinical Document: ${input.clinical_document}
+Clinical Document: ${{ input.clinical_document }}
 """
 
 CLINICAL_CONCEPT_SUMMARY_PROMPT = PromptTemplate(
     template=CLINICAL_CONCEPT_SUMMARY_TEMPLATE,
-    input_variables=["input"],
+    input_variables=["clinical_concepts", "input"],
 )
 
 
