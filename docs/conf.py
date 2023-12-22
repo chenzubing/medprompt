@@ -10,7 +10,8 @@
 import os
 import sys
 import shutil
-
+from medprompt import bootstrap
+bootstrap()
 # -- Path setup --------------------------------------------------------------
 
 __location__ = os.path.dirname(__file__)

@@ -7,7 +7,7 @@ from langchain.llms import AzureOpenAI, GPT4All, OpenAI, VertexAI
 
 
 def is_on_github_actions():
-    if "CI" not in os.environ or not os.environ["CI"] or "GITHUB_RUN_ID" not in os.environ:
+    if "CI" not in os.environ or not os.environ["CI"] or "GITHUB_RUN_ID" not in os.environ or "DOCSDIR" not in os.environ:
         return False
     return True
 
@@ -32,16 +32,19 @@ def bootstrap():
     di["top_k"] = int(getenv("TOP_K", "40"))
     di["verbose"] = True
 
-    di["vertex_ai"] = lambda di: VertexAI(
-        model_name=di["model_name"],
-        n=di["n"],
-        stop=di["stop"],
-        max_output_tokens=di["max_output_tokens"],
-        temperature=di["temperature"],
-        top_p=di["top_p"],
-        top_k=di["top_k"],
-        verbose=di["verbose"],
-    )
+    try:
+        di["vertex_ai"] = lambda di: VertexAI(
+            model_name=di["model_name"],
+            n=di["n"],
+            stop=di["stop"],
+            max_output_tokens=di["max_output_tokens"],
+            temperature=di["temperature"],
+            top_p=di["top_p"],
+            top_k=di["top_k"],
+            verbose=di["verbose"],
+        )
+    except:
+        di["vertex_ai"] = None
 
     MODEL_PATH = getenv("GPT4ALL_MODEL_PATH", os.getcwd() + "/models/orca-mini-3b-gguf2-q4_0.gguf")
     isExist = os.path.exists(MODEL_PATH)
