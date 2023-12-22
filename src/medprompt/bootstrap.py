@@ -11,6 +11,11 @@ def is_on_github_actions():
         return False
     return True
 
+def is_on_tox():
+    if "DOCSDIR" not in os.environ:
+        return False
+    return True
+
 def bootstrap():
     di["embedding_model"] = getenv("EMBEDDING_MODEL", "BAAI/bge-small-en-v1.5")
     di["index_schema"] = getenv("INDEX_SCHEMA", "/tmp/redis_schema.yaml")
@@ -33,19 +38,17 @@ def bootstrap():
     di["top_k"] = int(getenv("TOP_K", "40"))
     di["verbose"] = True
 
-    try:
-        di["vertex_ai"] = lambda di: VertexAI(
-            model_name=di["model_name"],
-            n=di["n"],
-            stop=di["stop"],
-            max_output_tokens=di["max_output_tokens"],
-            temperature=di["temperature"],
-            top_p=di["top_p"],
-            top_k=di["top_k"],
-            verbose=di["verbose"],
-        )
-    except:
-        di["vertex_ai"] = None
+    di["vertex_ai"] = lambda di: VertexAI(
+        model_name=di["model_name"],
+        n=di["n"],
+        stop=di["stop"],
+        max_output_tokens=di["max_output_tokens"],
+        temperature=di["temperature"],
+        top_p=di["top_p"],
+        top_k=di["top_k"],
+        verbose=di["verbose"],
+    )
+
 
     MODEL_PATH = getenv("GPT4ALL_MODEL_PATH", os.getcwd() + "/models/orca-mini-3b-gguf2-q4_0.gguf")
     isExist = os.path.exists(MODEL_PATH)
@@ -71,7 +74,7 @@ def bootstrap():
         model_name=di["model_name"],
     )
 
-    if is_on_github_actions():
+    if is_on_github_actions() or is_on_tox():
         di["rag_chain_main_llm"] = di["gpt4all"]
         di["rag_chain_clinical_llm"] = di["gpt4all"]
         di["fhir_agent_llm"] = di["gpt4all"]
@@ -85,8 +88,8 @@ def bootstrap():
         di["fhir_query_llm"] = di["vertex_ai"]
 
     # Should be last
-    from .tools import GetMedicalRecordTool
-    from .utils import HapiFhirServer
-    di["fhir_server"] = HapiFhirServer()
-    di["patient_id"] = getenv("PATIENT_ID", "592911")
-    di["get_medical_record_tool"] = GetMedicalRecordTool()
+    if not is_on_tox():
+        from .tools import GetMedicalRecordTool
+        from .utils import HapiFhirServer
+        di["fhir_server"] = HapiFhirServer()
+        di["get_medical_record_tool"] = GetMedicalRecordTool()
