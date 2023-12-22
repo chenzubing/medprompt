@@ -21,6 +21,7 @@ def bootstrap():
     di["expand_conceps_repo_id"] = getenv("EXPAND_CONCEPTS_REPO_ID", "garyw/clinical-embeddings-100d-w2v-cr")
     di["expand_concepts_filename"] = getenv("EXPAND_CONCEPTS_FILENAME", "w2v_OA_CR_100d.bin")
     di["expand_concepts_threshold"] = float(getenv("EXPAND_CONCEPTS_THRESHOLD", "0.75"))
+    di["expand_concepts_topn"] = int(getenv("EXPAND_CONCEPTS_TOPN", "10"))
 
     di["deployment_name"] = getenv("DEPLOYMENT_NAME", "text")
     di["model_name"] = getenv("MODEL_NAME", "text-bison@001")

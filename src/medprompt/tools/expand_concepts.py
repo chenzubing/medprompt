@@ -49,7 +49,7 @@ class ExpandConceptsTool(BaseTool):  # StructuredTool if more than one input typ
         phrases = []
         for concept in concepts:
             try:
-                _words.extend(model.wv.most_similar(concept, topn=5))
+                _words.extend(model.wv.most_similar(concept, topn=di["expand_concepts_topn"]))
             except:
                 pass
         for (word, score) in _words:
