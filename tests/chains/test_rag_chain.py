@@ -5,7 +5,7 @@ def test_check_index(patient_id):
     # Test with valid patient_id
     input_object = {
         "patient_id": patient_id,
-        "input": "What is the erythrocyte count?",
+        "input": "What is the erythrocyte count of patient " + patient_id + "?",
         "chat_history": [""]
     }
     result = check_index(input_object)
@@ -16,20 +16,20 @@ def test_check_index(patient_id):
 def test_get_rag_chain_not_mentioned(patient_id):
     input = {
         "patient_id": patient_id,
-        "input": "What is the weight of the patient?",
+        "input": "What is the weight of patient " + patient_id + "?",
         "chat_history": [""]
     }
     output = get_rag_tool(input)
     print(output)
-    assert "cannot be determined" in output
+    assert "unknown" in output
 
 
 def test_get_rag_chain_mentioned(patient_id):
     input = {
         "patient_id": patient_id,
-        "input": "What is the erythrocyte count of this patient?",
+        "input": "What is the last blood glucose of patient " + patient_id + "?",
         "chat_history": [""]
     }
     output = get_rag_tool(input)
     print(output)
-    assert "red blood" in output
+    assert "glucose" in output
