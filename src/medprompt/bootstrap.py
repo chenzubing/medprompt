@@ -12,7 +12,7 @@ def is_on_github_actions():
     return True
 
 def bootstrap():
-    di["embedding_model"] = getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
+    di["embedding_model"] = getenv("EMBEDDING_MODEL", "BAAI/bge-small-en-v1.5")
     di["index_schema"] = getenv("INDEX_SCHEMA", "/tmp/redis_schema.yaml")
     di["redis_url"] = getenv("REDIS_URL", "redis://localhost:6379")
     di["vectorstore_name"] = getenv("VECTORSTORE_NAME", "faiss")
