@@ -6,7 +6,7 @@ Healthcare inspared LLM prompts
 ## Contents
 
 ```{toctree}
-:maxdepth: 2
+:maxdepth: 6
 
 Overview <readme>
 Prompt Templates <info/prompts>
