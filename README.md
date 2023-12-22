@@ -88,7 +88,7 @@ print(messages)
 ```
 from medprompt.tools import FhirPatientSearchTool, CreateEmbeddingFromFhirBundle, ConvertFhirToTextTool, GetMedicalRecordTool
 from medprompt.chains import get_rag_tool
-from src.medprompt.utils import HapiFhirServer
+from medprompt.utils import HapiFhirServer
 from os import getenv
 
 # Dependency injection
