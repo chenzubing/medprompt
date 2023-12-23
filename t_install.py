@@ -42,21 +42,21 @@ add_routes(
 )
 
 
-add_routes(
-    app,
-    FhirAgent.get_agent(),
-    path="/agent",
-)
+# add_routes(
+#     app,
+#     FhirAgent().get_agent(),
+#     path="/agent",
+# )
 
-add_routes(
-    app,
-    get_runnable(),
-    path="/chain",
-)
+# add_routes(
+#     app,
+#     get_runnable(),
+#     path="/chain",
+# )
 
-if __name__ == "__main__":
-    import uvicorn
-    os.environ["LANGCHAIN_DEBUG"] = "1"
-    os.environ["LANGCHAIN_LOG_LEVEL"] = "DEBUG"
-    os.environ["TOKENIZERS_PARALLELISM"] = "false"
-    uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", 8080)))
+# if __name__ == "__main__":
+#     import uvicorn
+#     os.environ["LANGCHAIN_DEBUG"] = "1"
+#     os.environ["LANGCHAIN_LOG_LEVEL"] = "DEBUG"
+#     os.environ["TOKENIZERS_PARALLELISM"] = "false"
+#     uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", 8080)))

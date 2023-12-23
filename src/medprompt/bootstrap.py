@@ -81,11 +81,20 @@ def bootstrap():
         di["self_gen_cot_llm"] = di["gpt4all"]
         di["fhir_query_llm"] = di["gpt4all"]
     else:
-        di["rag_chain_main_llm"] = di["vertex_ai"]
-        di["rag_chain_clinical_llm"] = di["vertex_ai"]
-        di["fhir_agent_llm"] = di["vertex_ai"]
-        di["self_gen_cot_llm"] = di["vertex_ai"]
-        di["fhir_query_llm"] = di["vertex_ai"]
+        try:
+            di["rag_chain_main_llm"] = di["vertex_ai"]
+            di["rag_chain_clinical_llm"] = di["vertex_ai"]
+            di["fhir_agent_llm"] = di["vertex_ai"]
+            di["self_gen_cot_llm"] = di["vertex_ai"]
+            di["fhir_query_llm"] = di["vertex_ai"]
+        except:
+            di["vertex_ai"] = None
+            di["rag_chain_main_llm"] = di["vertex_ai"]
+            di["rag_chain_clinical_llm"] = di["vertex_ai"]
+            di["fhir_agent_llm"] = di["vertex_ai"]
+            di["self_gen_cot_llm"] = di["vertex_ai"]
+            di["fhir_query_llm"] = di["vertex_ai"]
+
 
     # Should be last
     if not is_on_tox():
